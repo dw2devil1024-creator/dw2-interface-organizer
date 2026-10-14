@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.2-beta.1';
+const VERSION = '0.1.3-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -391,15 +391,16 @@ function syncExtensionLayout(choices){
     header.setAttribute('aria-expanded',String(state.extensionsExpanded));
     $('.inline-drawer-icon',header).className='fa-solid inline-drawer-icon fa-circle-chevron-'+
       (state.extensionsExpanded?'up up':'down down');
-    setOrder(extMore,9000);
+    // Above the native Regex row (rank 2000), below native Extensions toolbar (rank 0).
+    setOrder(extMore,1000);
   }
   // Keep original ST extension containers in place. Only give their immediate
   // rows stable visual order: native systems → Tavern Helper → DW2 → others.
   choices.forEach((choice,index)=>{
-    setOrder(choice.element,next.has(choice.element)?(9100+index):extensionRank(choice,index));
+    setOrder(choice.element,next.has(choice.element)?(1100+index):extensionRank(choice,index));
   });
-  if(settingsEntry?.isConnected)setOrder(settingsEntry,3400);
-  extras.forEach((node,index)=>setOrder(node,9200+index));
+  if(settingsEntry?.isConnected)setOrder(settingsEntry,9900); // Always after every other extension row.
+  extras.forEach((node,index)=>setOrder(node,1200+index));
   for(const child of parent.children){
     if(child===extMore || roots.includes(child) || extras.includes(child))continue;
     if(!extOrders.has(child))setOrder(child,0);
@@ -501,7 +502,13 @@ function attachAccessPoints() {
   const checkbox=el('input');checkbox.type='checkbox';checkbox.id='dw2io-enabled-toggle';
   checkbox.checked=state.enabled;
   checkbox.addEventListener('change',()=>save({enabled:checkbox.checked}));
-  toggleRow.append(checkbox,el('span','','启用界面整理'));
+  // Neutral switch track: preserve a real checkbox for keyboard & settings,
+  // but do not let iOS paint it with its native blue accent.
+  const track=el('span','dw2io-switch-track');
+  track.setAttribute('aria-hidden','true');
+  track.append(el('span','dw2io-switch-thumb'));
+  checkbox.setAttribute('role','switch');
+  toggleRow.append(checkbox,track,el('span','dw2io-switch-copy','启用界面整理'));
   const actions=el('div','dw2io-native-actions');
   const launch=button('打开界面整理',openPanel,'menu_button dw2io-extension-launch');
   const update=button('检查并更新',checkAndUpdate,'menu_button dw2io-check-update');
