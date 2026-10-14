@@ -41,6 +41,22 @@
   flex:0 0 auto!important;width:100%!important;max-width:100%!important;
   min-width:0!important;margin-inline:0!important;
 }
+
+/* TT's global .extension_container { display:contents } removes each extension
+   wrapper's flex box. Giving ORDER to such a box has no layout effect.
+   Make only the two outer settings lists' DIRECT containers real flex items.
+   NEVER touch nested regex/preset/other extension internal containers. */
+.dw2io-ext-layout > :is(#extensions_settings,#extensions_settings2) > .extension_container{
+  display:block!important;box-sizing:border-box;min-width:0!important;width:100%!important;
+}
+.dw2io-ext-layout > :is(#extensions_settings,#extensions_settings2) > .extension_container.dw2io-ext-invisible,
+.dw2io-ext-layout > :is(#extensions_settings,#extensions_settings2) > .extension_container:empty{
+  display:none!important;
+}
+/* Dedicated last-row self settings stays a real flex item at rank 9900. */
+.dw2io-ext-layout > :is(#extensions_settings,#extensions_settings2) > #dw2io-settings{
+  display:block!important;order:9900!important;
+}
 .dw2io-ext-layout .dw2io-ext-invisible{display:none!important}
 #dw2io-ext-more{
   order:1000!important;width:100%!important;max-width:100%!important;
