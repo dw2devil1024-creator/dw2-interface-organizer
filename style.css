@@ -200,10 +200,40 @@
   color:#f1eff5;font-size:14px;font-weight:600;text-align:left;width:100%}
 #dw2io-dialog .dw2io-hint,#dw2io-dialog .dw2io-muted{color:#aebfcc;font-size:11px;line-height:1.7;margin:4px 0 9px}
 #dw2io-dialog .dw2io-section-body[hidden]{display:none!important}
-#dw2io-dialog .dw2io-check{display:flex;align-items:flex-start;gap:10px;min-height:36px;padding:7px 0;
-  color:#f5f3f7;font-size:12px;line-height:1.6;cursor:pointer}
-#dw2io-dialog .dw2io-check input{appearance:auto!important;opacity:1!important;position:static!important;width:15px!important;
-  min-width:15px!important;height:15px!important;margin:3px 0 0!important;accent-color:#b3ccdf!important}
+/* The dialog's controls are deliberately NEUTRAL, never native iOS blue.
+   The real checkbox stays focusable/accessibility-visible via its label.
+   A sibling decorative indicator draws the same appearance on iOS/Android/PC. */
+#dw2io-dialog .dw2io-check{
+  position:relative;display:flex;align-items:flex-start;gap:10px;
+  min-height:36px;padding:7px 0;
+  color:#f5f3f7;font-size:12px;line-height:1.6;cursor:pointer;
+}
+#dw2io-dialog .dw2io-check input[type="checkbox"]{
+  appearance:none!important;-webkit-appearance:none!important;
+  display:block!important;position:absolute!important;
+  top:7px!important;left:0!important;
+  width:20px!important;min-width:20px!important;height:22px!important;
+  margin:0!important;padding:0!important;
+  opacity:0!important;z-index:1;cursor:pointer;
+}
+#dw2io-dialog .dw2io-check-mark{
+  position:relative;display:inline-block;box-sizing:border-box;
+  flex:0 0 17px;width:17px;height:17px;margin:3px 0 0;
+  border:1px solid rgba(230,225,222,.65);border-radius:4px;
+  background:rgba(235,229,225,.06);box-shadow:none;
+  pointer-events:none;transition:background-color .12s,border-color .12s;
+}
+#dw2io-dialog .dw2io-check input[type="checkbox"]:checked + .dw2io-check-mark{
+  background:rgba(242,238,234,.90);border-color:rgba(250,246,243,.96);
+}
+#dw2io-dialog .dw2io-check input[type="checkbox"]:checked + .dw2io-check-mark::after{
+  content:'✓';position:absolute;left:0;top:0;width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  color:#4a4645;font:700 13px/1 system-ui,-apple-system,sans-serif;
+}
+#dw2io-dialog .dw2io-check input[type="checkbox"]:focus-visible + .dw2io-check-mark{
+  outline:2px solid rgba(244,237,230,.76);outline-offset:3px;
+}
 #dw2io-dialog .dw2io-check-copy{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;overflow-wrap:anywhere}
 #dw2io-dialog .dw2io-check small{color:#adc1cd;font-size:10px}
 #dw2io-dialog .dw2io-foot{font-size:10px;color:#9bacbc;text-align:right;padding:12px 0 0;margin:8px 0 0}
