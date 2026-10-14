@@ -5,11 +5,11 @@
  */
 const STORE = 'dw2InterfaceOrganizer';
 const ROOT_ID = 'dw2io-dialog';
-const MENU_ITEM_ID = 'dw2io-menu-entry';
+const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.0-beta.1';
+const VERSION = '0.1.1-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -24,16 +24,20 @@ const DEFAULTS = Object.freeze({
   menuFolded: NATIVE_MENU.map(pair => pair[0]),
   wandEnabled: true,
   wandHidden: [],
+  wandExpanded: false,
   extensionsEnabled: true,
   extensionsFolded: [],
   extensionsExpanded: false,
+  foldExtras: true,
 });
 const allowedKeys = Object.keys(DEFAULTS);
-let active = false, state = null, mounted = false, retries = 0, busy = false;
-let ctx = null, overlay = null, settingsEntry = null, menuEntry = null;
-let menuBox = null, menuPlan = '', menuExpanded = false;
+let active = false, state = null, retries = 0, busy = false;
+let ctx = null, overlay = null, settingsEntry = null, wandMore = null;
+let menuBox = null, menuBody = null, menuPlan = '', menuExpanded = false;
 let extParent = null, extMore = null;
-let wandHidden = new Set(), extHidden = new Set();
+const extOrders = new Map();
+let extExtraNodes = new Set();
+let wandHidden = new Set(), extHidden = new Set(), wandEmptyWrappers = new Set();
 const moved = new Map();
 const observed = new Map();
 const cleanup = [];
@@ -104,44 +108,58 @@ function restoreMenu() {
     if (placeholder.isConnected) placeholder.replaceWith(item);
     placeholder.remove();
   }
-  moved.clear(); menuBox?.remove(); menuBox = null; menuPlan='';
+  moved.clear();
+  menuBox?.remove(); menuBody?.remove();
+  menuBox = menuBody = null;
+  menuPlan = '';
 }
 function updateMoreButton() {
-  if (!menuBox) return;
-  const trigger = $('.dw2io-more-trigger',menuBox);
-  const content = $('.dw2io-more-body',menuBox);
-  const isOpen = menuExpanded;
-  content.hidden = !isOpen;
-  trigger.setAttribute('aria-expanded',String(isOpen));
-  trigger.textContent = isOpen ? '收起更多工具 ▴' : `更多工具（${moved.size}） ▾`;
+  if (!menuBox || !menuBody) return;
+  menuBody.hidden = !menuExpanded;
+  menuBox.setAttribute('aria-expanded',String(menuExpanded));
+  const ico=el('i','fa-solid fa-ellipsis fa-lg');
+  ico.setAttribute('aria-hidden','true');
+  menuBox.replaceChildren(ico,el('span','',menuExpanded?'收起更多工具 ▴':`更多工具（${moved.size}） ▾`));
 }
 function applyMenu() {
   const root = $('#options .options-content');
-  const ids = state.enabled && state.menuEnabled ? state.menuFolded.filter(id=>NATIVE_MENU.some(pair=>pair[0]===id)) : [];
+  const ids = state.enabled && state.menuEnabled
+    ? state.menuFolded.filter(id=>NATIVE_MENU.some(pair=>pair[0]===id)) : [];
   const available = ids.map(id=>byId(id)).filter(item=>item && root?.contains(item));
-  const wanted = root && available.length ? available.map(item=>item.id).join('|') + ':' + (root.id || 'options') : '';
-  if (menuBox?.parentElement === root && wanted === menuPlan && moved.size === available.length) return;
+  const wanted = root && available.length ? available.map(item=>item.id).join('|') : '';
+  if (menuBox?.parentElement===root && menuBody?.parentElement===root
+      && wanted===menuPlan && moved.size===available.length) return;
   restoreMenu();
   if (!root || !available.length) return;
-  menuBox = el('div','dw2io-more'); menuBox.id=EXTRA_ID;
-  const trigger = button('',()=>{ menuExpanded=!menuExpanded;updateMoreButton(); },'dw2io-more-trigger');
-  trigger.setAttribute('aria-controls','dw2io-more-body');
-  const content = el('div','dw2io-more-body'); content.id='dw2io-more-body';
-  menuBox.append(trigger,content); root.append(menuBox);
-  for (const item of available) {
-    const original = document.createComment('DW2 original menu position');
-    item.before(original); moved.set(item,original); content.append(item);
+  // Direct child like native TT menu items: allow active theme rules to style it.
+  const native=available.find(item=>item.matches('a,button')) || root.querySelector('a,button');
+  menuBox=el('a',native?.className || 'interactable');
+  menuBox.id=EXTRA_ID;
+  menuBox.classList.add('dw2io-more-trigger');
+  menuBox.setAttribute('role','button');menuBox.tabIndex=0;
+  menuBox.addEventListener('click',e=>{
+    e.preventDefault();e.stopPropagation();
+    menuExpanded=!menuExpanded;updateMoreButton();
+  });
+  menuBox.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();menuBox.click();}
+  });
+  menuBody=el('div','dw2io-more-body');
+  menuBody.id='dw2io-more-body';
+  root.append(menuBox,menuBody);
+  for(const item of available){
+    const original=document.createComment('DW2 original menu position');
+    item.before(original);moved.set(item,original);menuBody.append(item);
   }
-  menuPlan = wanted; updateMoreButton();
+  menuPlan=wanted;updateMoreButton();
 }
-
 // ---------- Surface 2: wand entry visibility ----------
 const keyFor = (e, context) => e.id ? 'id:'+e.id : context+':'+(e.dataset?.extension || e.getAttribute('title') || safeLabel(e));
 function listWand() {
   const root = byId('extensionsMenu'); if (!root) return [];
   const found = [], seen = new Map();
   for (const outer of root.children) {
-    if (outer.matches('script,style,hr,template,input,textarea,select')) continue;
+    if (outer.id === WAND_MORE_ID || outer.matches('script,style,hr,template,input,textarea,select')) continue;
     const entries = outer.classList.contains('extension_container') ? [...outer.children] : [outer];
     for (const e of entries) {
       if (e.matches('script,style,hr,template,input,textarea,select')) continue;
@@ -156,19 +174,49 @@ function listWand() {
   return found;
 }
 function clearWand() {
-  for (const node of wandHidden) node.classList.remove('dw2io-wand-hidden');
-  wandHidden.clear();
+  for(const node of wandHidden)node.classList.remove('dw2io-wand-hidden');
+  for(const node of wandEmptyWrappers)node.classList.remove('dw2io-wand-empty');
+  wandHidden.clear();wandEmptyWrappers.clear();
+  wandMore?.remove();wandMore=null;
 }
-function applyWand(choices) {
-  const next=new Set();
-  if (state.enabled && state.wandEnabled) {
-    for (const c of choices) if (state.wandHidden.includes(c.key)) next.add(c.element);
+function applyWand(choices){
+  const root=byId('extensionsMenu');
+  const chosen=state.enabled && state.wandEnabled
+    ? choices.filter(c=>state.wandHidden.includes(c.key)) : [];
+  const collapsed=!state.wandExpanded;
+  const next=new Set(collapsed?chosen.map(c=>c.element):[]);
+  for(const node of wandHidden)if(!next.has(node))node.classList.remove('dw2io-wand-hidden');
+  for(const node of next)node.classList.add('dw2io-wand-hidden');
+  wandHidden=next;
+  const empty=new Set();
+  for(const outer of new Set(chosen.map(c=>c.wrapper))){
+    if(!collapsed || !outer?.classList.contains('extension_container'))continue;
+    const rows=choices.filter(c=>c.wrapper===outer);
+    if(rows.length && [...outer.children].every(e=>rows.some(c=>c.element===e))
+      && rows.every(c=>next.has(c.element)))empty.add(outer);
   }
-  for(const node of wandHidden) if(!next.has(node)) node.classList.remove('dw2io-wand-hidden');
-  for(const node of next) node.classList.add('dw2io-wand-hidden');
-  wandHidden = next;
+  for(const node of wandEmptyWrappers)if(!empty.has(node))node.classList.remove('dw2io-wand-empty');
+  for(const node of empty)node.classList.add('dw2io-wand-empty');
+  wandEmptyWrappers=empty;
+  if(!root || !chosen.length){wandMore?.remove();wandMore=null;return;}
+  if(!wandMore || wandMore.parentElement!==root){
+    wandMore?.remove();
+    wandMore=el('a','interactable dw2io-wand-more');
+    wandMore.id=WAND_MORE_ID;wandMore.setAttribute('role','button');wandMore.tabIndex=0;
+    wandMore.addEventListener('click',e=>{
+      e.preventDefault();e.stopPropagation();
+      save({wandExpanded:!state.wandExpanded});
+    });
+    wandMore.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();wandMore.click();}
+    });
+    root.append(wandMore);
+  }
+  wandMore.setAttribute('aria-expanded',String(state.wandExpanded));
+  const icon=el('i','fa-solid fa-ellipsis fa-lg');
+  icon.setAttribute('aria-hidden','true');
+  wandMore.replaceChildren(icon,el('span','',`${state.wandExpanded?'收起更多工具':'更多工具'}（${chosen.length}）${state.wandExpanded?' ▴':' ▾'}`));
 }
-
 // ---------- Surface 3: extension drawer's outer columns ONLY ----------
 function listExtensionSettings() {
   const found=[];let i=0;
