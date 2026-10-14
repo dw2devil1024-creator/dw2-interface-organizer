@@ -13,10 +13,16 @@
 }
 #dw2io-more-body > *{max-width:100%}
 
-/* Wand: selected native entries remain attached to their original handlers.
-   Expand reveals them in their original positions; no duplicate proxy clicks. */
-#extensionsMenu .dw2io-wand-hidden,
+/* Magic wand's More Tools sits immediately ABOVE its folded, original entries.
+   We keep original DOM handlers and wrap them in their previous container class. */
 #extensionsMenu .dw2io-wand-empty{display:none!important}
+#extensionsMenu #dw2io-wand-body[hidden]{display:none!important}
+#extensionsMenu #dw2io-wand-body{
+  display:flex;flex-direction:column;gap:0;width:100%;min-width:0;
+}
+#extensionsMenu #dw2io-wand-body > *{
+  min-width:0;max-width:100%;
+}
 #extensionsMenu > #dw2io-wand-more{
   width:100%;display:flex;align-items:center;gap:.65em;
   cursor:pointer;text-align:left;min-height:36px;
@@ -37,12 +43,37 @@
 }
 .dw2io-ext-layout .dw2io-ext-invisible{display:none!important}
 #dw2io-ext-more{
-  order:-1100!important;width:100%!important;max-width:100%!important;
+  order:9000!important;width:100%!important;max-width:100%!important;
   margin:4px 0;min-width:0;
 }
 #dw2io-ext-more > .inline-drawer-header{cursor:pointer}
 #dw2io-settings{width:100%;min-width:0}
 #dw2io-settings .dw2io-settings-content[hidden]{display:none!important}
+#dw2io-settings .dw2io-settings-heading{
+  display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:3px;
+}
+#dw2io-settings .dw2io-credits{
+  display:block;font-size:11px;line-height:1.35;font-weight:400;
+  opacity:.6;color:inherit;
+}
+#dw2io-settings .dw2io-native-switch{
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  margin:7px 0;font:inherit;color:inherit;
+}
+#dw2io-settings .dw2io-native-switch input{
+  position:static!important;appearance:auto!important;
+  width:16px!important;height:16px!important;min-width:16px;
+  opacity:1!important;margin:0!important;cursor:pointer;
+}
+#dw2io-settings .dw2io-native-actions{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0;
+}
+#dw2io-settings .dw2io-native-actions > button{
+  max-width:100%;width:auto!important;min-height:34px;
+}
+#dw2io-settings .dw2io-settings-caption{
+  opacity:.7;font-size:11px;line-height:1.65;margin:8px 0;
+}
 #dw2io-settings .dw2io-extension-launch{
   width:auto;max-width:100%;min-height:34px;display:inline-flex;
   align-items:center;justify-content:center;
