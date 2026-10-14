@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.3-beta.1';
+const VERSION = '0.1.4-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
