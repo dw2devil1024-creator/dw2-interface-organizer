@@ -37,7 +37,10 @@ let menuBox = null, menuBody = null, menuPlan = '', menuExpanded = false;
 let extParent = null, extMore = null;
 const extOrders = new Map();
 let extExtraNodes = new Set();
-let wandHidden = new Set(), extHidden = new Set(), wandEmptyWrappers = new Set();
+let extHidden = new Set(), wandBody = null;
+const wandMoved = new Map();
+const wandHolders = new Map();
+const wandEmptyWrappers = new Set();
 const moved = new Map();
 const observed = new Map();
 const cleanup = [];
@@ -171,52 +174,106 @@ function listWand() {
       found.push({key:stem+(count>1?':'+count:''),label,element:e,wrapper:outer});
     }
   }
+  // Entries currently inside our folded body still belong to the wand inventory.
+  // Keep the original key stable while the DOM node is moved.
+  const keys=new Set(found.map(c=>c.key));
+  for(const entry of wandMoved.values()){
+    const c=entry.choice;
+    if(c.element.isConnected && root.contains(c.element) && !keys.has(c.key)){
+      found.push(c);keys.add(c.key);
+    }
+  }
   return found;
 }
-function clearWand() {
-  for(const node of wandHidden)node.classList.remove('dw2io-wand-hidden');
+function restoreWandItem(node,record){
+  if(record.marker.parentNode)record.marker.replaceWith(node);
+  else node.remove(); // The original plugin rebuilt or removed its source container.
+  record.marker.remove();
+  wandMoved.delete(node);
+}
+function clearWand(){
+  for(const [node,record] of [...wandMoved])restoreWandItem(node,record);
   for(const node of wandEmptyWrappers)node.classList.remove('dw2io-wand-empty');
-  wandHidden.clear();wandEmptyWrappers.clear();
+  wandEmptyWrappers.clear();
+  for(const holder of wandHolders.values())holder.remove();
+  wandHolders.clear();
+  wandBody?.remove();wandBody=null;
   wandMore?.remove();wandMore=null;
+}
+function ensureWandMore(root){
+  if(wandMore?.parentElement===root && wandBody?.parentElement===root)return;
+  // On native menu replacement, restore before constructing a new section.
+  clearWand();
+  wandMore=el('a','interactable dw2io-wand-more');
+  wandMore.id=WAND_MORE_ID;
+  wandMore.setAttribute('role','button');wandMore.tabIndex=0;
+  wandBody=el('div','dw2io-wand-body');
+  wandBody.id='dw2io-wand-body';
+  wandMore.setAttribute('aria-controls',wandBody.id);
+  wandMore.addEventListener('click',e=>{
+    e.preventDefault();e.stopPropagation();
+    save({wandExpanded:!state.wandExpanded});
+  });
+  wandMore.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();wandMore.click();}
+  });
+  root.append(wandMore,wandBody);
+}
+function moveWandItem(choice){
+  const node=choice.element;
+  if(wandMoved.has(node))return;
+  if(!node.parentNode)return;
+  const parent=node.parentNode;
+  const marker=document.createComment('DW2 original wand position');
+  node.before(marker);
+  wandMoved.set(node,{choice,marker});
+  if(choice.wrapper!==node && choice.wrapper?.classList?.contains('extension_container')){
+    let holder=wandHolders.get(parent);
+    if(!holder){
+      // Preserve the original native extension-container class for child entries.
+      holder=el('div',parent.className);
+      holder.classList.add('dw2io-wand-group');
+      holder.removeAttribute('id');
+      wandHolders.set(parent,holder);
+      wandBody.append(holder);
+    }
+    holder.append(node);
+  }else{
+    wandBody.append(node);
+  }
 }
 function applyWand(choices){
   const root=byId('extensionsMenu');
-  const chosen=state.enabled && state.wandEnabled
-    ? choices.filter(c=>state.wandHidden.includes(c.key)) : [];
-  const collapsed=!state.wandExpanded;
-  const next=new Set(collapsed?chosen.map(c=>c.element):[]);
-  for(const node of wandHidden)if(!next.has(node))node.classList.remove('dw2io-wand-hidden');
-  for(const node of next)node.classList.add('dw2io-wand-hidden');
-  wandHidden=next;
-  const empty=new Set();
-  for(const outer of new Set(chosen.map(c=>c.wrapper))){
-    if(!collapsed || !outer?.classList.contains('extension_container'))continue;
-    const rows=choices.filter(c=>c.wrapper===outer);
-    if(rows.length && [...outer.children].every(e=>rows.some(c=>c.element===e))
-      && rows.every(c=>next.has(c.element)))empty.add(outer);
+  const selected=state.enabled && state.wandEnabled
+    ?choices.filter(c=>state.wandHidden.includes(c.key)):[];
+  if(!root || !selected.length){clearWand();return;}
+  ensureWandMore(root);
+  const wanted=new Set(selected.map(c=>c.element));
+  for(const [node,record] of [...wandMoved]){
+    if(!wanted.has(node) || !node.isConnected || !root.contains(node))restoreWandItem(node,record);
   }
-  for(const node of wandEmptyWrappers)if(!empty.has(node))node.classList.remove('dw2io-wand-empty');
-  for(const node of empty)node.classList.add('dw2io-wand-empty');
-  wandEmptyWrappers=empty;
-  if(!root || !chosen.length){wandMore?.remove();wandMore=null;return;}
-  if(!wandMore || wandMore.parentElement!==root){
-    wandMore?.remove();
-    wandMore=el('a','interactable dw2io-wand-more');
-    wandMore.id=WAND_MORE_ID;wandMore.setAttribute('role','button');wandMore.tabIndex=0;
-    wandMore.addEventListener('click',e=>{
-      e.preventDefault();e.stopPropagation();
-      save({wandExpanded:!state.wandExpanded});
-    });
-    wandMore.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){e.preventDefault();wandMore.click();}
-    });
-    root.append(wandMore);
+  for(const choice of selected)moveWandItem(choice);
+  for(const [parent,holder] of [...wandHolders]){
+    if(!holder.children.length){holder.remove();wandHolders.delete(parent);}
   }
+  for(const outer of wandEmptyWrappers)outer.classList.remove('dw2io-wand-empty');
+  wandEmptyWrappers.clear();
+  for(const record of wandMoved.values()){
+    const outer=record.choice.wrapper;
+    if(outer?.classList?.contains('extension_container') && !outer.childElementCount){
+      outer.classList.add('dw2io-wand-empty');wandEmptyWrappers.add(outer);
+    }
+  }
+  // Downwards expansion: the ORIGINAL entries live after the trigger,
+  // instead of reappearing above their control.
+  wandBody.hidden=!state.wandExpanded;
   wandMore.setAttribute('aria-expanded',String(state.wandExpanded));
-  const icon=el('i','fa-solid fa-ellipsis fa-lg');
-  icon.setAttribute('aria-hidden','true');
-  wandMore.replaceChildren(icon,el('span','',`${state.wandExpanded?'收起更多工具':'更多工具'}（${chosen.length}）${state.wandExpanded?' ▴':' ▾'}`));
+  wandMore.replaceChildren(
+    el('i','fa-solid fa-ellipsis fa-lg'),
+    el('span','',`${state.wandExpanded?'收起更多工具':'更多工具'}（${selected.length}）${state.wandExpanded?' ▴':' ▾'}`)
+  );
 }
+
 // ---------- Surface 3: extension drawer's outer columns ONLY ----------
 function listExtensionSettings() {
   const found=[];let i=0;
