@@ -1,40 +1,53 @@
-/* DW2 Interface Organizer. All selectors are scoped to our own classes. */
+/* DW2 Interface Organizer. Only three external TT surfaces are touched.
+   Native TT theme is the sole appearance owner for menu/drawer controls. */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&display=swap');
-#dw2io-menu-entry,#dw2io-settings .dw2io-extension-launch{
-  font:500 13px/1.5 'Noto Serif SC','Songti SC',serif;
-  color:var(--SmartThemeBodyColor,#f4edf3);cursor:pointer;
-  background:transparent;border:0;text-align:left;padding:9px 12px;
-  display:block;width:100%;min-height:38px;
+
+/* Hamburger: direct child trigger inherits the same classes as TT's original menu items. */
+#options .options-content > #dw2io-more-menu{
+  display:flex;align-items:center;gap:.65em;width:100%;
+  cursor:pointer;text-align:left;
 }
-#dw2io-menu-entry:hover,#dw2io-settings .dw2io-extension-launch:hover{background:rgba(155,175,190,.09)}
-#dw2io-settings{margin:4px 0}
-#dw2io-settings .inline-drawer{width:100%}
-#dw2io-more-menu{margin-top:5px}
-#dw2io-more-menu .dw2io-more-trigger{
-  width:100%;padding:9px 12px;text-align:left;background:rgba(140,175,195,.08);
-  color:var(--SmartThemeBodyColor,#f4edf3);border:0;border-top:1px solid rgba(170,185,195,.2);
-  cursor:pointer;font:500 13px/1.5 'Noto Serif SC','Songti SC',serif;
+#dw2io-more-body[hidden]{display:none!important}
+#dw2io-more-body{
+  display:flex;flex-direction:column;gap:0;width:100%;min-width:0;
 }
-#dw2io-more-menu .dw2io-more-body[hidden]{display:none!important}
-#dw2io-more-menu .dw2io-more-body{display:flex;flex-direction:column;gap:2px;padding-left:12px}
-#extensionsMenu .dw2io-wand-hidden{display:none!important}
-/* Only the OUTER native Extensions settings panel is converted to one column. */
+#dw2io-more-body > *{max-width:100%}
+
+/* Wand: selected native entries remain attached to their original handlers.
+   Expand reveals them in their original positions; no duplicate proxy clicks. */
+#extensionsMenu .dw2io-wand-hidden,
+#extensionsMenu .dw2io-wand-empty{display:none!important}
+#extensionsMenu > #dw2io-wand-more{
+  width:100%;display:flex;align-items:center;gap:.65em;
+  cursor:pointer;text-align:left;min-height:36px;
+  color:inherit;font:inherit;
+}
+
+/* Extension settings: flatten native columns without reconstructing any inner widgets.
+   Sorting is applied to direct native rows only and restored on disable. */
 .extensions_block.dw2io-ext-layout,#rm_extensions_block.dw2io-ext-layout{
   display:flex!important;flex-direction:column!important;align-items:stretch!important;
 }
-.dw2io-ext-layout > #extensions_settings,.dw2io-ext-layout > #extensions_settings2{display:contents!important}
+.dw2io-ext-layout > #extensions_settings,
+.dw2io-ext-layout > #extensions_settings2{display:contents!important}
 .dw2io-ext-layout > #extensions_settings > :not(script):not(style),
 .dw2io-ext-layout > #extensions_settings2 > :not(script):not(style){
-  flex:0 0 auto!important;width:100%!important;max-width:100%!important;min-width:0!important;
+  flex:0 0 auto!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;margin-inline:0!important;
 }
-.dw2io-ext-layout .dw2io-ext-low{order:-8!important}
 .dw2io-ext-layout .dw2io-ext-invisible{display:none!important}
 #dw2io-ext-more{
-  order:-9!important;display:block!important;width:100%!important;max-width:100%!important;
-  background:rgba(150,175,193,.09);padding:12px 14px;border:1px solid rgba(185,190,200,.24);
-  border-radius:7px;color:var(--SmartThemeBodyColor,#f4edf3);cursor:pointer;text-align:left;
-  font:500 13px/1.5 'Noto Serif SC','Songti SC',serif;margin:8px 0;
+  order:-1100!important;width:100%!important;max-width:100%!important;
+  margin:4px 0;min-width:0;
 }
+#dw2io-ext-more > .inline-drawer-header{cursor:pointer}
+#dw2io-settings{width:100%;min-width:0}
+#dw2io-settings .dw2io-settings-content[hidden]{display:none!important}
+#dw2io-settings .dw2io-extension-launch{
+  width:auto;max-width:100%;min-height:34px;display:inline-flex;
+  align-items:center;justify-content:center;
+}
+
 /* Simple stand-alone settings dialog, independent from the user's TT theme. */
 #dw2io-dialog.dw2io-backdrop{position:fixed!important;inset:0!important;z-index:2147483640!important;
   background:rgba(15,20,28,.46)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
