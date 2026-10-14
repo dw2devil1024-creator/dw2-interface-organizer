@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.4-beta.1';
+const VERSION = '0.1.5-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -493,11 +493,12 @@ function attachAccessPoints() {
   const header=el('div','inline-drawer-toggle inline-drawer-header');
   header.setAttribute('role','button');header.tabIndex=0;
   const heading=el('div','dw2io-settings-heading');
-  heading.append(el('b','','DW2 · 界面整理'),el('small','dw2io-credits','S.A. · DW2'));
+  heading.append(el('b','dw2io-settings-title','✧ DW2 · Interface Organizer'),el('small','dw2io-credits','S.A. · DW2'));
   const arrow=el('div','fa-solid inline-drawer-icon fa-circle-chevron-down down');
   header.append(heading,arrow);
   const body=el('div','inline-drawer-content dw2io-settings-content');
   body.hidden=true;
+  body.append(el('p','dw2io-settings-version','三横菜单 · 魔法棒 · 扩展设置  |  v'+VERSION));
   const toggleRow=el('label','dw2io-native-switch');
   const checkbox=el('input');checkbox.type='checkbox';checkbox.id='dw2io-enabled-toggle';
   checkbox.checked=state.enabled;
