@@ -166,7 +166,7 @@ function listWand() {
   const root = byId('extensionsMenu'); if (!root) return [];
   const found = [], seen = new Map();
   for (const outer of root.children) {
-    if (outer.id === WAND_MORE_ID || outer.matches('script,style,hr,template,input,textarea,select')) continue;
+    if (outer.id === WAND_MORE_ID || outer.id === 'dw2io-wand-body' || outer.matches('script,style,hr,template,input,textarea,select')) continue;
     const entries = outer.classList.contains('extension_container') ? [...outer.children] : [outer];
     for (const e of entries) {
       if (e.matches('script,style,hr,template,input,textarea,select')) continue;
