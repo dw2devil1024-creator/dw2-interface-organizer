@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.5-beta.1';
+const VERSION = '0.1.6-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -98,9 +98,10 @@ function checkbox(text, checked, callback, description='') {
   const row = el('label','dw2io-check');
   const input = el('input'); input.type = 'checkbox'; input.checked = !!checked;
   input.addEventListener('change',() => callback(input.checked));
+  const mark = el('span','dw2io-check-mark'); mark.setAttribute('aria-hidden','true');
   const span = el('span','dw2io-check-copy'); span.append(el('span','',text));
   if (description) span.append(el('small','',description));
-  row.append(input,span);return row;
+  row.append(input,mark,span);return row;
 }
 function notify(message,kind='info') {
   if(globalThis.toastr?.[kind])globalThis.toastr[kind](String(message),'DW2 · 界面整理');
