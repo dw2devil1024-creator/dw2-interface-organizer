@@ -1,3 +1,5 @@
+import { extensionTypes, openThirdPartyExtensionMenu } from '../../../extensions.js';
+import { getRequestHeaders } from '../../../../script.js';
 /* DW2 · Interface Organizer | Private-use beta
  * Owns only three surfaces: native hamburger menu, magic-wand entries, and
  * the outer layout of the native Extensions settings drawer.
@@ -9,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.1-beta.1';
+const VERSION = '0.1.2-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -46,6 +48,7 @@ const observed = new Map();
 const cleanup = [];
 const openParts = new Set(['menu', 'wand', 'extensions']);
 let refreshTimer = 0;
+let updateInProgress = false;
 
 const $ = (s, base=document) => base.querySelector(s);
 const byId = id => document.getElementById(id);
@@ -99,8 +102,9 @@ function checkbox(text, checked, callback, description='') {
   if (description) span.append(el('small','',description));
   row.append(input,span);return row;
 }
-function notify(message) {
-  if (globalThis.toastr?.info) globalThis.toastr.info(message,'DW2 · 界面整理');
+function notify(message,kind='info') {
+  if(globalThis.toastr?.[kind])globalThis.toastr[kind](String(message),'DW2 · 界面整理');
+  else console[kind==='warning'?'warn':'info']('[DW2 Interface Organizer]',message);
 }
 
 // ---------- Surface 1: original native hamburger items ----------
@@ -387,15 +391,15 @@ function syncExtensionLayout(choices){
     header.setAttribute('aria-expanded',String(state.extensionsExpanded));
     $('.inline-drawer-icon',header).className='fa-solid inline-drawer-icon fa-circle-chevron-'+
       (state.extensionsExpanded?'up up':'down down');
-    setOrder(extMore,-1100);
+    setOrder(extMore,9000);
   }
   // Keep original ST extension containers in place. Only give their immediate
   // rows stable visual order: native systems → Tavern Helper → DW2 → others.
   choices.forEach((choice,index)=>{
-    setOrder(choice.element,next.has(choice.element)?(-1000+index):extensionRank(choice,index));
+    setOrder(choice.element,next.has(choice.element)?(9100+index):extensionRank(choice,index));
   });
   if(settingsEntry?.isConnected)setOrder(settingsEntry,3400);
-  extras.forEach((node,index)=>setOrder(node,-900+index));
+  extras.forEach((node,index)=>setOrder(node,9200+index));
   for(const child of parent.children){
     if(child===extMore || roots.includes(child) || extras.includes(child))continue;
     if(!extOrders.has(child))setOrder(child,0);
@@ -438,37 +442,90 @@ function mountRetry() {
   scan();
   if(retries++<8) { const t=setTimeout(mountRetry,900);cleanup.push(()=>clearTimeout(t)); }
 }
-function attachAccessPoints() {
-  // Legacy v0.1.0 entry must not return after this update.
-  byId('dw2io-menu-entry')?.remove();
-  const root=byId('extensions_settings2') || byId('extensions_settings');
-  if(root && (!settingsEntry || !settingsEntry.isConnected)){
-    settingsEntry=el('div','extension_container dw2io-settings');
-    settingsEntry.id=SETTINGS_ID;
-    const drawer=el('div','inline-drawer');
-    const header=el('div','inline-drawer-toggle inline-drawer-header');
-    header.setAttribute('role','button');header.tabIndex=0;
-    const label=el('b','','DW2 · 界面整理');
-    const arrow=el('div','fa-solid inline-drawer-icon fa-circle-chevron-down down');
-    header.append(label,arrow);
-    const body=el('div','inline-drawer-content dw2io-settings-content');
-    body.hidden=true;
-    const launch=button('打开界面整理',openPanel,'menu_button dw2io-extension-launch');
-    body.append(launch);drawer.append(header,body);settingsEntry.append(drawer);root.append(settingsEntry);
-    let expanded=false;
-    const toggle=(e)=>{
-      e.preventDefault();e.stopPropagation();
-      expanded=!expanded;body.hidden=!expanded;
-      header.setAttribute('aria-expanded',String(expanded));
-      arrow.className='fa-solid inline-drawer-icon fa-circle-chevron-'+
-        (expanded?'up up':'down down');
-    };
-    header.addEventListener('click',toggle);
-    header.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){e.preventDefault();header.click();}
+async function checkAndUpdate() {
+  if(updateInProgress)return;
+  const button=byId('dw2io-check-update');
+  updateInProgress=true;
+  if(button){button.disabled=true;button.textContent='正在检查…';}
+  try{
+    const id=Object.keys(extensionTypes||{}).find(key=>
+      key==='third-party/dw2-interface-organizer' ||
+      key.endsWith('/dw2-interface-organizer')
+    );
+    if(!id)throw new Error('无法识别安装目录，请到 TT 的「管理扩展」检查更新');
+    const res=await fetch('/api/extensions/update',{
+      method:'POST',
+      headers:getRequestHeaders(),
+      body:JSON.stringify({
+        extensionName:id.replace(/^third-party/,''),
+        global:extensionTypes[id]==='global',
+      }),
     });
+    if(!res.ok)throw new Error((await res.text() || 'HTTP '+res.status).slice(0,200));
+    const data=await res.json();
+    notify(data.isUpToDate?'已是最新版本':'更新已安装，请刷新 TT 酒馆', 'success');
+  }catch(error){
+    notify('更新检查失败：'+(error?.message||String(error)),'warning');
+  }finally{
+    updateInProgress=false;
+    if(button?.isConnected){button.disabled=false;button.textContent='检查并更新';}
   }
 }
+function refreshTavern(){
+  if(window.confirm('重新加载 TT 酒馆？请先保存尚未保存的预设修改。')){
+    window.location.reload();
+  }
+}
+function attachAccessPoints() {
+  // Drop the one-off hamburger launch entry from v0.1.0.
+  byId('dw2io-menu-entry')?.remove();
+  const root=byId('extensions_settings2') || byId('extensions_settings');
+  if(!root)return;
+  if(settingsEntry?.isConnected){
+    const checkbox=byId('dw2io-enabled-toggle');
+    if(checkbox && checkbox.checked!==state.enabled)checkbox.checked=state.enabled;
+    return;
+  }
+  settingsEntry=el('div','extension_container dw2io-settings');
+  settingsEntry.id=SETTINGS_ID;
+  const drawer=el('div','inline-drawer');
+  const header=el('div','inline-drawer-toggle inline-drawer-header');
+  header.setAttribute('role','button');header.tabIndex=0;
+  const heading=el('div','dw2io-settings-heading');
+  heading.append(el('b','','DW2 · 界面整理'),el('small','dw2io-credits','S.A. · DW2'));
+  const arrow=el('div','fa-solid inline-drawer-icon fa-circle-chevron-down down');
+  header.append(heading,arrow);
+  const body=el('div','inline-drawer-content dw2io-settings-content');
+  body.hidden=true;
+  const toggleRow=el('label','dw2io-native-switch');
+  const checkbox=el('input');checkbox.type='checkbox';checkbox.id='dw2io-enabled-toggle';
+  checkbox.checked=state.enabled;
+  checkbox.addEventListener('change',()=>save({enabled:checkbox.checked}));
+  toggleRow.append(checkbox,el('span','','启用界面整理'));
+  const actions=el('div','dw2io-native-actions');
+  const launch=button('打开界面整理',openPanel,'menu_button dw2io-extension-launch');
+  const update=button('检查并更新',checkAndUpdate,'menu_button dw2io-check-update');
+  update.id='dw2io-check-update';
+  const manage=button('管理扩展',()=>void openThirdPartyExtensionMenu(),'menu_button');
+  const refresh=button('刷新酒馆',refreshTavern,'menu_button');
+  actions.append(launch,update,manage,refresh);
+  body.append(toggleRow,actions,el('div','dw2io-settings-caption',
+    '仅整理三横菜单、魔法棒与扩展设置的布局，不修改各扩展的功能。'));
+  drawer.append(header,body);settingsEntry.append(drawer);root.append(settingsEntry);
+  let expanded=false;
+  const expand=(e)=>{
+    e.preventDefault();e.stopPropagation();
+    expanded=!expanded;body.hidden=!expanded;
+    header.setAttribute('aria-expanded',String(expanded));
+    arrow.className='fa-solid inline-drawer-icon fa-circle-chevron-'+
+      (expanded?'up up':'down down');
+  };
+  header.addEventListener('click',expand);
+  header.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();header.click();}
+  });
+}
+
 function openPanel(){
   if(!state || overlay)return;
   overlay=el('div','dw2io-backdrop');overlay.id=ROOT_ID;
