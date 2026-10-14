@@ -1,6 +1,6 @@
 # DW2 · Interface Organizer
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.6-beta.1**，iPhone 实机仍需逐项验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.7-beta.1**，iPhone 实机仍需逐项验收。
 
 ## 只整理三个位置
 
@@ -25,6 +25,14 @@ https://github.com/dw2devil1024-creator/dw2-interface-organizer
 唯一的设置入口在 **扩展设置页 → ✧ DW2 · Interface Organizer（S.A. · DW2）**。展开后可以直接启用/停用整理、打开详细设置、**检查并更新**、打开原生扩展管理、**刷新酒馆**（有二次确认）。
 
 三个模块均可单独开关；「恢复原界面」关闭全部整理并取消收纳。魔法棒隐藏只影响入口可见性，不停用原有插件。
+
+## v0.1.7-beta.1 · DW2 五插件排序兼容
+
+- 对照 `dw2-story-archive` 源码，确认书架的扩展设置仅追加到 TT 原生容器，没有主动往前插队。
+- 修复界面整理对原生扩展项目识别不完整的问题：不再让书架插在「代码渲染 / 数据迁移 / TauriTavern 版本」等原生设置之间。
+- 优先用仓库真实 ID 固定 DW2 顺序：`jd-bookshelf-settings` → `dw2-preset-console-settings` → `dw2-lt-settings` → `dw2rl-settings` → `dw2io-settings`。
+- 即使不同手机上模块加载顺序不同，原生与非 DW2 设置先列出，五个 DW2 连续排在后面；「更多扩展设置」仍保持在顶部工具栏之后。
+- 只修改本插件的扩展设置显示排序，不更动书架或其他四个仓库，也不影响三横菜单、魔法棒和弹窗勾选。
 
 ## v0.1.6-beta.1 · 弹窗勾选框去蓝色
 
