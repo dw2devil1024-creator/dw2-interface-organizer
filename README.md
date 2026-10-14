@@ -1,6 +1,6 @@
 # DW2 · Interface Organizer
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.5-beta.1**，iPhone 实机仍需逐项验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.6-beta.1**，iPhone 实机仍需逐项验收。
 
 ## 只整理三个位置
 
@@ -25,6 +25,12 @@ https://github.com/dw2devil1024-creator/dw2-interface-organizer
 唯一的设置入口在 **扩展设置页 → ✧ DW2 · Interface Organizer（S.A. · DW2）**。展开后可以直接启用/停用整理、打开详细设置、**检查并更新**、打开原生扩展管理、**刷新酒馆**（有二次确认）。
 
 三个模块均可单独开关；「恢复原界面」关闭全部整理并取消收纳。魔法棒隐藏只影响入口可见性，不停用原有插件。
+
+## v0.1.6-beta.1 · 弹窗勾选框去蓝色
+
+- 界面整理弹窗内全部复选框使用柔灰边框、雾白选中底色与深灰勾号，不再硬编码蓝色 `accent-color`。
+- 保留真实 checkbox 的点击、标签、键盘焦点与状态回调，统一 iOS / Android / PC 的外观。
+- 不改扩展页单列排序、灰白启用开关、原生四按钮、三横菜单及魔法棒收纳逻辑。
 
 ## v0.1.5-beta.1 · 家族风格统一
 
