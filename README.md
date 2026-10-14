@@ -13,7 +13,7 @@
 TauriTavern → 扩展 → 安装扩展，粘贴下面的公开 Git 地址：
 
 ```text
-https://github.com/dw2devil1024-creator/dw2-interface-organizer-
+https://github.com/dw2devil1024-creator/dw2-interface-organizer
 ```
 
 安装后刷新 TT。在输入栏左侧三横菜单中选择「⚙ 界面整理」，或进入扩展设置页找到 DW2 · 界面整理。
