@@ -1,0 +1,71 @@
+/* DW2 Interface Organizer. All selectors are scoped to our own classes. */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&display=swap');
+#dw2io-menu-entry,#dw2io-settings .dw2io-extension-launch{
+  font:500 13px/1.5 'Noto Serif SC','Songti SC',serif;
+  color:var(--SmartThemeBodyColor,#f4edf3);cursor:pointer;
+  background:transparent;border:0;text-align:left;padding:9px 12px;
+  display:block;width:100%;min-height:38px;
+}
+#dw2io-menu-entry:hover,#dw2io-settings .dw2io-extension-launch:hover{background:rgba(155,175,190,.09)}
+#dw2io-settings{margin:4px 0}
+#dw2io-settings .inline-drawer{width:100%}
+#dw2io-more-menu{margin-top:5px}
+#dw2io-more-menu .dw2io-more-trigger{
+  width:100%;padding:9px 12px;text-align:left;background:rgba(140,175,195,.08);
+  color:var(--SmartThemeBodyColor,#f4edf3);border:0;border-top:1px solid rgba(170,185,195,.2);
+  cursor:pointer;font:500 13px/1.5 'Noto Serif SC','Songti SC',serif;
+}
+#dw2io-more-menu .dw2io-more-body[hidden]{display:none!important}
+#dw2io-more-menu .dw2io-more-body{display:flex;flex-direction:column;gap:2px;padding-left:12px}
+#extensionsMenu .dw2io-wand-hidden{display:none!important}
+/* Only the OUTER native Extensions settings panel is converted to one column. */
+.extensions_block.dw2io-ext-layout,#rm_extensions_block.dw2io-ext-layout{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+}
+.dw2io-ext-layout > #extensions_settings,.dw2io-ext-layout > #extensions_settings2{display:contents!important}
+.dw2io-ext-layout > #extensions_settings > :not(script):not(style),
+.dw2io-ext-layout > #extensions_settings2 > :not(script):not(style){
+  flex:0 0 auto!important;width:100%!important;max-width:100%!important;min-width:0!important;
+}
+.dw2io-ext-layout .dw2io-ext-low{order:-8!important}
+.dw2io-ext-layout .dw2io-ext-invisible{display:none!important}
+#dw2io-ext-more{
+  order:-9!important;display:block!important;width:100%!important;max-width:100%!important;
+  background:rgba(150,175,193,.09);padding:12px 14px;border:1px solid rgba(185,190,200,.24);
+  border-radius:7px;color:var(--SmartThemeBodyColor,#f4edf3);cursor:pointer;text-align:left;
+  font:500 13px/1.5 'Noto Serif SC','Songti SC',serif;margin:8px 0;
+}
+/* Simple stand-alone settings dialog, independent from the user's TT theme. */
+#dw2io-dialog.dw2io-backdrop{position:fixed!important;inset:0!important;z-index:2147483640!important;
+  background:rgba(15,20,28,.46)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex!important;align-items:center;justify-content:center;padding:14px;box-sizing:border-box;
+}
+#dw2io-dialog,#dw2io-dialog *{box-sizing:border-box;font-family:'Noto Serif SC','Songti SC',serif}
+#dw2io-dialog .dw2io-panel{width:min(470px,100%);max-height:min(85dvh,740px);min-height:0;display:flex;
+  flex-direction:column;border:1px solid rgba(208,224,230,.35);border-radius:13px;
+  background:rgba(35,43,55,.94);color:#f1f0f4;box-shadow:0 18px 55px rgba(0,0,0,.28);overflow:hidden;
+}
+#dw2io-dialog .dw2io-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:19px 18px 12px;
+  border-bottom:1px solid rgba(208,224,230,.15)}
+#dw2io-dialog .dw2io-overline{font-size:10px;letter-spacing:.15em;color:#b9c9d8}
+#dw2io-dialog h2{font-size:20px;font-weight:600;line-height:1.3;color:#faf7fb;margin:6px 0 0}
+#dw2io-dialog .dw2io-scroll{overflow:auto;overscroll-behavior:contain;padding:14px 18px 24px;min-height:0}
+#dw2io-dialog .dw2io-lead{font-size:12px;color:#c8d5de;line-height:1.75;margin:0 0 14px}
+#dw2io-dialog .dw2io-button{display:inline-flex;align-items:center;justify-content:center;
+  padding:8px 12px;min-height:34px;width:auto;max-width:100%;border:1px solid rgba(210,224,229,.25);
+  border-radius:6px;background:rgba(200,220,235,.10);color:#edf5fa;font-size:12px;cursor:pointer;line-height:1.4}
+#dw2io-dialog .dw2io-button.dw2io-close{font-size:23px;width:36px;height:36px;padding:0;border:none;background:transparent}
+#dw2io-dialog .dw2io-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
+#dw2io-dialog .dw2io-quiet{background:transparent}
+#dw2io-dialog .dw2io-section{border-top:1px solid rgba(210,224,229,.16);padding:12px 0}
+#dw2io-dialog .dw2io-section-toggle{border:0;background:transparent;padding:6px 0;min-height:34px;cursor:pointer;
+  color:#f1eff5;font-size:14px;font-weight:600;text-align:left;width:100%}
+#dw2io-dialog .dw2io-hint,#dw2io-dialog .dw2io-muted{color:#aebfcc;font-size:11px;line-height:1.7;margin:4px 0 9px}
+#dw2io-dialog .dw2io-section-body[hidden]{display:none!important}
+#dw2io-dialog .dw2io-check{display:flex;align-items:flex-start;gap:10px;min-height:36px;padding:7px 0;
+  color:#f5f3f7;font-size:12px;line-height:1.6;cursor:pointer}
+#dw2io-dialog .dw2io-check input{appearance:auto!important;opacity:1!important;position:static!important;width:15px!important;
+  min-width:15px!important;height:15px!important;margin:3px 0 0!important;accent-color:#b3ccdf!important}
+#dw2io-dialog .dw2io-check-copy{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;overflow-wrap:anywhere}
+#dw2io-dialog .dw2io-check small{color:#adc1cd;font-size:10px}
+#dw2io-dialog .dw2io-foot{font-size:10px;color:#9bacbc;text-align:right;padding:12px 0 0;margin:8px 0 0}
