@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.6-beta.1';
+const VERSION = '0.1.7-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -321,11 +321,24 @@ const SYSTEM_IDS = [
   'audio_container','objective_container','silence_container','live2d_container',
   'vrm_container','timelines_container','webllm_container','websearch_container',
 ];
+// Pin our five sibling extensions by their REAL setting IDs, rather than
+// guessing from title text or whichever order the phone loaded modules.
+// Other native or third-party settings must all precede the DW2 family.
+const DW2_SETTINGS_ORDER = Object.freeze([
+  'jd-bookshelf-settings',
+  'dw2-preset-console-settings',
+  'dw2-lt-settings',
+  'dw2rl-settings',
+]);
 function extensionRank(choice,index){
-  if(SYSTEM_IDS.includes(choice.element.id))return 2000+SYSTEM_IDS.indexOf(choice.element.id);
+  const id=choice.element.id || '';
+  const ownIndex=DW2_SETTINGS_ORDER.indexOf(id);
+  if(ownIndex>=0)return 8000+ownIndex;
+  if(SYSTEM_IDS.includes(id))return 2000+index;
   if(/^酒馆助手|^Tavern\s*Helper\b/i.test(choice.label)
-    || /^(TH-settings|tavern[-_]helper[-_]settings)$/i.test(choice.element.id))return 3000+index;
-  if(/^DW2\b|^DW2 ·/i.test(choice.label))return 3500+index;
+    || /^(TH-settings|tavern[-_]helper[-_]settings)$/i.test(id))return 3000+index;
+  // Unknown DW2 entries stay in the family, but behind the four established plugins.
+  if(/^DW2\b|^DW2 ·|^✧\s*DW2\b/i.test(choice.label))return 8500+index;
   return 4000+index;
 }
 // Native obsolete Extras API rows may live outside both extension settings columns.
