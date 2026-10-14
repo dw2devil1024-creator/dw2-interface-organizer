@@ -1,0 +1,16 @@
+{
+  "display_name": "DW2 · Interface Organizer",
+  "author": "DW2",
+  "version": "0.1.0-beta.1",
+  "loading_order": 115,
+  "requires": [],
+  "optional": [],
+  "js": "index.js",
+  "css": "style.css",
+  "minimum_client_version": "1.16.0",
+  "auto_update": false,
+  "hooks": {
+    "enable": "onEnable",
+    "disable": "onDisable"
+  }
+}
