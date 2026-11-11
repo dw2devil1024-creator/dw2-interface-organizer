@@ -316,15 +316,16 @@
     max-width:100%!important;
   }
 }
-/* v0.1.19 · compact global World Info Select2, without touching entry Select2s.
-   TT's shared select2-overrides.css paints the inline SEARCH textarea as
-   another grey bordered box. It is both the empty placeholder bar and the
-   little square after a chosen book. Keep that real input interactive. */
+/* v0.1.20 · compact global selector, no phantom search row.
+   Keep Select2's original markup and search events; style only this one
+   global World Info picker while the DW2 world layout is enabled. */
 #WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container .select2-selection--multiple {
   box-sizing:border-box!important;
+  position:relative;
   height:auto!important;
-  min-height:32px!important;
-  padding:2px 7px!important;
+  min-height:30px!important;
+  padding:1px 7px!important;
+  line-height:26px;
 }
 #WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container .select2-search--inline textarea.select2-search__field {
   box-sizing:border-box!important;
@@ -342,7 +343,32 @@
   vertical-align:middle!important;
   resize:none!important;
   color:var(--SmartThemeBodyColor,inherit);
-  /* Width is deliberately not set: Select2 updates it while typing. */
+  /* Select2 dynamically controls width as the user types. */
+}
+/* Empty selection: the search textarea is the placeholder, so give its text
+   a balanced baseline rather than pushing it toward the bottom border. */
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container .select2-selection--multiple:not(:has(.select2-selection__choice)) .select2-search__field {
+  position:relative;
+  top:-1px;
+}
+/* With selected books and the dropdown CLOSED, Select2's trailing inline
+   search <li> would form an extra blank line. Remove it from flow only:
+   it remains a real focusable input and returns to normal while opened. */
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container:not(.select2-container--open) .select2-selection--multiple:has(.select2-selection__choice) .select2-search--inline {
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  overflow:hidden!important;
+  padding:0!important;
+  margin:0!important;
+  right:0;
+  bottom:0;
+}
+/* Keep selected tags compact without clipping longer names or changing the
+   original selection/remove events. */
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container .select2-selection--multiple .select2-selection__choice {
+  margin-top:2px!important;
+  margin-bottom:2px!important;
 }
 
 /* This hr separates the editor from the activation controls. */
