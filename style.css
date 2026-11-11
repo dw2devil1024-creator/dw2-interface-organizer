@@ -286,6 +286,89 @@
   overscroll-behavior-x:none;
   touch-action:pan-y;
 }
+
+/* v0.1.16 · top-level World Info mobile tidy-up.
+   Scope strictly to the independently enabled DW2 world layout. */
+@media (max-width:800px) {
+  /* Both original top controls stretch to the same available phone width.
+     The native drawer still owns its open/close state and its contents. */
+  #WorldInfo.dw2io-world-layout-host #wiTopBlock {
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    box-sizing:border-box;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%;
+    gap:10px;
+  }
+  #WorldInfo.dw2io-world-layout-host #wiTopBlock > .range-block {
+    display:flex!important;
+    align-self:stretch!important;
+    flex:0 0 auto!important;
+    box-sizing:border-box;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #WorldInfo.dw2io-world-layout-host #wiTopBlock > .range-block > .inline-drawer {
+    display:block;
+    align-self:stretch!important;
+    box-sizing:border-box;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #WorldInfo.dw2io-world-layout-host #wiTopBlock .standoutHeader.inline-drawer-header {
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    box-sizing:border-box;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+}
+/* Give the native global multi-select enough vertical room for its placeholder
+   and chips without changing Select2 data, options or event handling. */
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .range-block-range {
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  min-height:44px;
+}
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container {
+  box-sizing:border-box;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-selection--multiple {
+  box-sizing:border-box!important;
+  height:auto!important;
+  min-height:44px!important;
+  padding:6px 8px!important;
+}
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-selection__rendered {
+  box-sizing:border-box;
+  min-height:28px;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+}
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-search__field {
+  box-sizing:border-box;
+  height:26px!important;
+  min-height:26px!important;
+  line-height:26px!important;
+  margin-top:0!important;
+  margin-bottom:0!important;
+}
+/* This is TT's separator before the entries, not a part of the native
+   activation-settings drawer. Hide it only in the DW2 layout. */
+#world_popup.dw2io-world-layout > hr:first-child {
+  display:none!important;
+}
 #world_popup.dw2io-world-layout > .flex-container,
 #world_popup.dw2io-world-layout #world_popup_entries_list,
 #world_popup.dw2io-world-layout .world_entry,
