@@ -17,7 +17,11 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.14-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.15-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.15-beta.1 · 世界书正文框高度微调
+
+根据 iPhone 最新验收截图，在「世界书 · 清透布局」打开时，条目原生正文 textarea 的最小高度由 205px 稍微增加到 265px（多约 60px 的可视编辑空间），宽度、内容、交互、原生滚动与编辑功能不变。此前验收满意的「正文设置」、单行标题、「高级设置」、管理工具及其他 DW2 插件都不调整。仅静态代码核验，iPhone 实际显示待验收。
 
 ## v0.1.14-beta.1 · 正文设置勾选框微调与单行说明
 
