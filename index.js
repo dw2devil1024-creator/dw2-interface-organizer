@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.7-beta.1';
+const VERSION = '0.1.8-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -31,6 +31,7 @@ const DEFAULTS = Object.freeze({
   extensionsFolded: [],
   extensionsExpanded: false,
   foldExtras: true,
+  worldLayoutEnabled: false,
 });
 const allowedKeys = Object.keys(DEFAULTS);
 let active = false, state = null, retries = 0, busy = false;
@@ -49,6 +50,7 @@ const cleanup = [];
 const openParts = new Set(['menu', 'wand', 'extensions']);
 let refreshTimer = 0;
 let updateInProgress = false;
+let worldRoot = null, worldList = null, worldObserver = null, worldFrame = 0;
 
 const $ = (s, base=document) => base.querySelector(s);
 const byId = id => document.getElementById(id);
@@ -420,6 +422,94 @@ function syncExtensionLayout(choices){
     if(!extOrders.has(child))setOrder(child,0);
   }
 }
+
+// ---------- Surface 4: reversible native World Info editor layout ----------
+// No original input, select, switch, or save listener is cloned or relocated.
+// The native world-book Select2 and Resource Library grouping stay untouched.
+const WORLD_TABS = Object.freeze([
+  ['main', '正文'],
+  ['rules', '触发规则'],
+  ['advanced', '高级设置'],
+]);
+function addWorldTabs(editor) {
+  if (!editor || editor.querySelector(':scope > .dw2io-wi-tabs')) return;
+  const tabs = el('div', 'dw2io-wi-tabs');
+  tabs.setAttribute('role', 'group');
+  tabs.setAttribute('aria-label', '世界书条目编辑分区');
+  const buttons = [];
+  const choose = key => {
+    editor.dataset.dw2ioTab = key;
+    for (const button of buttons) {
+      const selected = button.dataset.tab === key;
+      button.setAttribute('aria-pressed', String(selected));
+      button.classList.toggle('dw2io-wi-tab-active', selected);
+    }
+  };
+  for (const [key, label] of WORLD_TABS) {
+    const button = el('button', 'dw2io-wi-tab', label);
+    button.type = 'button'; // Never submit TT's native entry form.
+    button.dataset.tab = key;
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      choose(key);
+    });
+    buttons.push(button);
+    tabs.append(button);
+  }
+  editor.prepend(tabs);
+  choose('main');
+}
+function syncWorldTabs() {
+  if (!worldList || !worldList.isConnected) return;
+  for (const editor of worldList.querySelectorAll('.world_entry .world_entry_edit')) {
+    addWorldTabs(editor);
+  }
+}
+function disconnectWorldLayout() {
+  if (worldFrame) cancelAnimationFrame(worldFrame);
+  worldFrame = 0;
+  worldObserver?.disconnect(); worldObserver = null;
+  if (worldList) {
+    for (const editor of worldList.querySelectorAll('.world_entry .world_entry_edit')) {
+      editor.querySelector(':scope > .dw2io-wi-tabs')?.remove();
+      delete editor.dataset.dw2ioTab;
+    }
+  }
+  worldRoot?.classList.remove('dw2io-world-layout');
+  worldRoot = null; worldList = null;
+}
+function syncWorldLayout() {
+  const enabled = !!(active && state?.enabled && state?.worldLayoutEnabled);
+  const root = enabled ? byId('world_popup') : null;
+  const list = root?.querySelector('#world_popup_entries_list') || null;
+  if (!root || !list) {
+    if (worldRoot || worldList) disconnectWorldLayout();
+    return;
+  }
+  if (root !== worldRoot || list !== worldList) {
+    disconnectWorldLayout();
+    worldRoot = root; worldList = list;
+    worldRoot.classList.add('dw2io-world-layout');
+    worldObserver = new MutationObserver(records => {
+      if (!active || !state?.enabled || !state?.worldLayoutEnabled) return;
+      // Only native entry additions/replacements need augmentation. Never
+      // observe attribute changes or textarea values; typing stays native.
+      const changed = records.some(record => [...record.addedNodes].some(node =>
+        node.nodeType === 1 && (
+          node.matches?.('.world_entry, .world_entry_edit, .inline-drawer-outlet') ||
+          node.querySelector?.('.world_entry, .world_entry_edit')
+        )
+      ));
+      if (!changed || worldFrame) return;
+      worldFrame = requestAnimationFrame(() => { worldFrame = 0; syncWorldTabs(); });
+    });
+    worldObserver.observe(worldList, { childList: true, subtree: true });
+  }
+  worldRoot.classList.add('dw2io-world-layout');
+  syncWorldTabs();
+}
+
 // ---------- Scan only native menus/settings (never observe chat messages) ----------
 function scheduleScan() {
   if (!active || busy || refreshTimer) return;
@@ -443,6 +533,7 @@ function scan() {
     applyMenu();
     const wand=listWand(),extensions=listExtensionSettings();
     applyWand(wand);syncExtensionLayout(extensions);
+    syncWorldLayout();
     for(const observer of observed.values())observer.takeRecords();
   } catch(error) {
     console.error('[DW2 Interface Organizer] scan failed',error);
@@ -499,6 +590,9 @@ function attachAccessPoints() {
   if(settingsEntry?.isConnected){
     const checkbox=byId('dw2io-enabled-toggle');
     if(checkbox && checkbox.checked!==state.enabled)checkbox.checked=state.enabled;
+    const worldCheckbox=byId('dw2io-world-layout-toggle');
+    if(worldCheckbox && worldCheckbox.checked!==state.worldLayoutEnabled)
+      worldCheckbox.checked=state.worldLayoutEnabled;
     return;
   }
   settingsEntry=el('div','extension_container dw2io-settings');
@@ -512,7 +606,7 @@ function attachAccessPoints() {
   header.append(heading,arrow);
   const body=el('div','inline-drawer-content dw2io-settings-content');
   body.hidden=true;
-  body.append(el('p','dw2io-settings-version','三横菜单 · 魔法棒 · 扩展设置  |  v'+VERSION));
+  body.append(el('p','dw2io-settings-version','三横菜单 · 魔法棒 · 扩展设置 · 世界书  |  v'+VERSION));
   const toggleRow=el('label','dw2io-native-switch');
   const checkbox=el('input');checkbox.type='checkbox';checkbox.id='dw2io-enabled-toggle';
   checkbox.checked=state.enabled;
@@ -531,8 +625,20 @@ function attachAccessPoints() {
   const manage=button('管理扩展',()=>void openThirdPartyExtensionMenu(),'menu_button');
   const refresh=button('刷新酒馆',refreshTavern,'menu_button');
   actions.append(launch,update,manage,refresh);
-  body.append(toggleRow,actions,el('div','dw2io-settings-caption',
-    '仅整理三横菜单、魔法棒与扩展设置的布局，不修改各扩展的功能。'));
+  // Independent one-tap World Info layout switch in the Extensions drawer.
+  const worldRow=el('label','dw2io-native-switch dw2io-world-settings-switch');
+  const worldCheckbox=el('input');
+  worldCheckbox.type='checkbox';worldCheckbox.id='dw2io-world-layout-toggle';
+  worldCheckbox.checked=state.worldLayoutEnabled;
+  worldCheckbox.setAttribute('role','switch');
+  worldCheckbox.addEventListener('change',()=>save({worldLayoutEnabled:worldCheckbox.checked}));
+  const worldTrack=el('span','dw2io-switch-track');
+  worldTrack.setAttribute('aria-hidden','true');
+  worldTrack.append(el('span','dw2io-switch-thumb'));
+  worldRow.append(worldCheckbox,worldTrack,
+    el('span','dw2io-switch-copy','世界书 · 清透布局（关闭恢复原版）'));
+  body.append(toggleRow,worldRow,actions,el('div','dw2io-settings-caption',
+    '三横菜单、魔法棒、扩展设置与世界书布局分别控制；只整理界面，不更改原生功能和数据。'));
   drawer.append(header,body);settingsEntry.append(drawer);root.append(settingsEntry);
   let expanded=false;
   const expand=(e)=>{
@@ -566,11 +672,11 @@ function renderPanel(){
   if(!overlay)return;
   const root=$('#dw2io-panel-content',overlay);if(!root)return;
   const pos=root.scrollTop;root.replaceChildren();
-  root.append(el('p','dw2io-lead','只整理三个入口区域。隐藏 ≠ 停用插件；预设、正则、世界书、用户设置都不修改。'));
+  root.append(el('p','dw2io-lead','整理原生界面的显示方式，不改 TT 的输入、保存、启用状态和原有数据。'));
   root.append(checkbox('启用界面整理',state.enabled,v=>save({enabled:v})));
   const actions=el('div','dw2io-actions');
   actions.append(button('重新识别',()=>{scan();renderPanel();notify('已重新扫描入口');}),button('恢复原界面',()=>{
-    save({enabled:false,menuFolded:[],wandHidden:[],wandExpanded:false,extensionsFolded:[],extensionsExpanded:false,foldExtras:false});
+    save({enabled:false,menuFolded:[],wandHidden:[],wandExpanded:false,extensionsFolded:[],extensionsExpanded:false,foldExtras:false,worldLayoutEnabled:false});
     notify('已关闭整理并恢复所有入口');
   },'dw2io-quiet'));root.append(actions);
   const section=(key,title,desc)=>{
@@ -606,6 +712,9 @@ function renderPanel(){
   for(const c of extensions)eb.append(checkbox('收纳 · '+c.label,state.extensionsFolded.includes(c.key),v=>{
     const next=new Set(state.extensionsFolded);v?next.add(c.key):next.delete(c.key);save({extensionsFolded:[...next]});
   }));
+  const wi=section('world','04 · 世界书 · 清透布局','跟随当前 TT 主题。搜索全宽、编辑卡片分区；关闭即恢复原版，不改变世界书内容。');
+  wi.append(checkbox('启用世界书新布局',state.worldLayoutEnabled,v=>save({worldLayoutEnabled:v}),
+    '扩展设置页面也有一个独立开关；关闭总开关时此项一起暂停。'));
   root.append(el('p','dw2io-foot',`DW2 · Interface Organizer ${VERSION} · 私用测试版 · 不自动更新`));
   root.scrollTop=pos;
 }
@@ -630,7 +739,7 @@ export function onEnable(){
 export function onDisable(){
   if(!active)return;active=false;
   clearTimeout(refreshTimer);refreshTimer=0;
-  closePanel();restoreMenu();clearWand();resetExtensionLayout();
+  closePanel();restoreMenu();clearWand();resetExtensionLayout();disconnectWorldLayout();
   settingsEntry?.remove();settingsEntry=null;byId('dw2io-menu-entry')?.remove();
   for(const observer of observed.values()) observer.disconnect();observed.clear();
   for(const fn of cleanup.splice(0))fn();
