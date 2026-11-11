@@ -17,7 +17,18 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.12-beta.1**。根据 iPhone 实机反馈，统一高级设置中两个多选框的标签和输入框对齐，把「额外匹配来源」六个勾选项改成三列两排，并缩小标题字号。原生交互保持不变，待实机复测。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.13-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.13-beta.1 · 世界书正文设置折叠与正文标题重排
+
+- **正文设置折叠**：在原生关键词输入区域之后、正文 textarea 之前插入默认收起的 `<details>`，视觉与已验收的「高级设置」一致；正文仍直接显示。
+- **第一排四列**：逻辑／扫描深度／区分大小写／完整单词；窄屏自动收紧字级和控件内边距，不触发整页横向滚动。
+- **第二排两列**：组评分／自动化 ID。
+- **第三排四项**：不可递归／防止进一步递归、延迟到递归／无视回复限额，按照原生控件顺序重排为两列两行。
+- **条件控件**：出口名称和递归层级仍保留原生值、状态与条件显示逻辑，放在正文设置内作为有条件显示的补充项。
+- **正文标题**：复用原生最大化图标、内容文字、动态词符计数、UID 和原有说明文本，图标改排最左，说明文字可在窄屏自然换到第二行。未复制或重建计数器与编辑器。
+- **严格可回退**：移动的真实控件都保留原位标记；关闭世界书清透布局后逐个恢复 TT 原生顺序。高级设置、菜单、扩展设置、其他 DW2 插件不改动。
+- **测试状态**：代码语法和版本号校验通过，尚未在 iPhone 实机验证。特别需要测试默认折叠、四列输入、递归勾选、原生最大化按钮、词符/UID 更新与清透布局开关回退。
 
 ## v0.1.12-beta.1 · 高级设置选择框对齐及额外匹配来源紧凑化
 
