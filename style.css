@@ -259,7 +259,32 @@
   width:100%!important;
   min-width:0!important;
   max-width:100%!important;
-  overflow-x:clip;
+  overflow-x:clip!important;
+  overscroll-behavior-x:none;
+  touch-action:pan-y;
+}
+/* Outer drawer clipping: previous styling controlled only #world_popup.
+   The outer fixed WorldInfo panel could still pan horizontally on phones. */
+#WorldInfo.dw2io-world-layout-host {
+  max-width:100dvw!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  overflow-x:clip!important;
+  overscroll-behavior-x:none;
+  touch-action:pan-y;
+}
+#WorldInfo.dw2io-world-layout-host #wi-holder {
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow-x:clip!important;
+  overscroll-behavior-x:none;
+  touch-action:pan-y;
+}
+#WorldInfo.dw2io-world-layout-host #world_popup_entries_list {
+  overflow-x:clip!important;
+  overscroll-behavior-x:none;
+  touch-action:pan-y;
 }
 #world_popup.dw2io-world-layout > .flex-container,
 #world_popup.dw2io-world-layout #world_popup_entries_list,
@@ -352,20 +377,22 @@
 #world_popup.dw2io-world-layout .dw2io-wi-tools-summary {
   display:inline-flex!important;
   align-items:center;
-  gap:7px;
+  gap:6px;
   box-sizing:border-box;
-  min-height:34px;
+  min-height:28px;
   max-width:100%;
-  padding:5px 11px;
+  padding:4px 2px;
   font:inherit;
   font-size:12px;
-  line-height:1.4;
+  line-height:1.35;
   color:var(--SmartThemeBodyColor,inherit);
-  background:color-mix(in srgb,var(--SmartThemeBlurTintColor,transparent) 12%,transparent);
-  border:1px solid var(--SmartThemeBorderColor,currentColor);
-  border-radius:8px;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  outline-offset:2px;
   cursor:pointer;
-  list-style:none;
+  list-style:none!important;
   user-select:none;
   -webkit-user-select:none;
   touch-action:manipulation;
@@ -376,63 +403,85 @@
 #world_popup.dw2io-world-layout .dw2io-wi-tools-summary::marker {
   content:"";
 }
-#world_popup.dw2io-world-layout .dw2io-wi-tools-hint {
-  opacity:.56;
-  font-size:10px;
-  font-weight:400;
-}
-#world_popup.dw2io-world-layout .dw2io-wi-tools-chevron {
-  opacity:.75;
-  font-size:15px;
-  transition:transform .16s ease;
-}
-#world_popup.dw2io-world-layout .dw2io-wi-tools[open] .dw2io-wi-tools-chevron {
-  transform:rotate(180deg);
-}
 #world_popup.dw2io-world-layout .dw2io-wi-tools-strip {
+  display:grid!important;
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  align-items:center!important;
+  gap:2px!important;
+  box-sizing:border-box;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding:6px 0 5px;
+  overflow-x:clip!important;
+  overflow-y:visible!important;
+  overscroll-behavior-x:none;
+  touch-action:pan-y;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-strip > .menu_button {
+  display:flex!important;
+  flex:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+  width:100%!important;
+  height:29px!important;
+  min-height:29px!important;
+  margin:0!important;
+  padding:2px 1px!important;
+  white-space:nowrap;
+  font-size:clamp(11px,3.2vw,15px)!important;
+}
+/* Native page counter starts a second row, flex-wrapped on narrow screens. */
+#world_popup.dw2io-world-layout .dw2io-wi-tools-pages {
+  box-sizing:border-box;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  padding:2px 0 5px;
+  margin:0;
+  overflow-x:clip!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-pages > #world_info_pagination {
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-pages #world_info_pagination .paginationjs {
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  gap:3px 5px!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-pages .paginationjs-pages ul {
   display:flex!important;
   flex-wrap:nowrap!important;
   align-items:center!important;
-  gap:5px!important;
-  box-sizing:border-box;
-  width:100%;
-  min-width:0;
-  max-width:100%;
-  padding:9px 3px 7px;
-  overflow-x:auto!important;
-  overflow-y:hidden!important;
-  overscroll-behavior-x:contain;
-  -webkit-overflow-scrolling:touch;
-  touch-action:pan-x;
-  scrollbar-width:thin;
+  gap:2px!important;
+  padding:0!important;
+  margin:0 2px!important;
 }
-#world_popup.dw2io-world-layout .dw2io-wi-tools-strip > .menu_button {
-  display:inline-flex!important;
-  flex:0 0 auto!important;
-  align-items:center;
-  justify-content:center;
+#world_popup.dw2io-world-layout .dw2io-wi-tools-pages .paginationjs-size-changer select {
   box-sizing:border-box;
-  min-width:32px!important;
-  min-height:32px!important;
-  width:auto!important;
-  height:32px!important;
+  min-width:75px!important;
+  max-width:115px!important;
+  height:33px;
   margin:0!important;
-  padding:4px 7px!important;
-  white-space:nowrap;
 }
-#world_popup.dw2io-world-layout .dw2io-wi-tools-strip > #world_info_pagination {
-  display:flex!important;
-  flex:0 0 auto!important;
-  width:max-content!important;
-  max-width:none!important;
-  min-width:max-content;
-  align-items:center;
-  white-space:nowrap;
-  margin:0 0 0 4px!important;
-}
-#world_popup.dw2io-world-layout .dw2io-wi-tools-strip #world_info_pagination select {
-  min-width:75px;
-  max-width:120px;
+#world_popup.dw2io-world-layout .dw2io-wi-tools-strip > #world_create_button > span {
+  display:none!important;
 }
 /* Native entries: compact, avoid wide descendants forcing sideways page pan. */
 #world_popup.dw2io-world-layout #world_popup_entries_list {
@@ -524,29 +573,45 @@
   margin:7px 0 8px;
 }
 #world_popup.dw2io-world-layout .WIEntryTitleAndStatus > .flex-container {
-  min-width:0!important;
+  display:flex!important;
   flex:1 1 auto!important;
+  align-items:center!important;
+  min-width:0!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
 }
 #world_popup.dw2io-world-layout .WIEntryTitleAndStatus textarea[name="comment"],
 #world_popup.dw2io-world-layout .WIEntryTitleAndStatus select[name="entryStateSelector"] {
+  display:block;
   box-sizing:border-box!important;
   height:36px!important;
   min-height:36px!important;
+  max-height:36px!important;
   margin:0!important;
-  line-height:1.45!important;
+  border-width:1px!important;
+  vertical-align:middle!important;
 }
 #world_popup.dw2io-world-layout .WIEntryTitleAndStatus textarea[name="comment"] {
   display:block;
   width:100%!important;
   min-width:0!important;
-  padding:7px 9px!important;
+  padding:8px 9px!important;
+  line-height:18px!important;
+  text-align:start;
   resize:vertical;
 }
 #world_popup.dw2io-world-layout .WIEntryTitleAndStatus select[name="entryStateSelector"] {
+  display:block;
   flex:0 0 auto;
+  align-self:center!important;
   min-width:68px!important;
   max-width:95px!important;
-  padding:4px 5px!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  line-height:20px!important;
+  padding:0 6px!important;
 }
 /* One original row for Position, Depth, Order, Trigger %.
    On narrow phones shrink fields rather than wrap the row into two. */
