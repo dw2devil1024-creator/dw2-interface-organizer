@@ -17,7 +17,15 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.10-beta.1**。世界书新布局仍是独立开关的测试功能，这次修复外层抽屉横向移动、将管理图标与分页拆成两排、收紧按钮、统一标题与状态框高度；展开条目的三分区和原有功能不动。iOS、Android 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.11-beta.1**。世界书条目编辑页取消重复的三个分区按钮，正文直接可见；下方新增默认收起的「高级设置」折叠栏，原生控件和保存逻辑保留。iOS、Android 实机待验收。
+
+## v0.1.11-beta.1 · 世界书展开页简化与高级设置折叠
+
+- 移除原先注入的「正文／触发规则／高级设置」三分区按钮。正文与原生关键词、触发相关设置保持可见，暂不重排触发规则。
+- 在正文内容区域下方增加默认折叠的「高级设置」，使用原生 HTML details/summary，跟随 TT 主题颜色。
+- 首排三列：包含组、组权重、粘性；「确定优先级」放至包含组输入框下方。下一排：冷却、延迟。再下一排：绑定到角色或标签、筛选生成触发器；「排除」勾选另起一行。额外匹配来源保留内部原生折叠。
+- 移动真实 TT 输入及勾选节点，不复制或重建控件；每个原位置保存占位标记，关闭世界书清透布局后恢复原生顺序。
+- 不改变世界书数据、原生触发算法和自动保存逻辑。仅静态语法核验，尚未完成 iPhone 实机验收；待测试 Select2 多选、优先级及排除勾选、折叠后滚动行为。
 
 ## v0.1.10-beta.1 · 世界书整页防横滑＋折叠工具栏与标题微调
 
