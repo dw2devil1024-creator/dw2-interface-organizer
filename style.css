@@ -1084,14 +1084,17 @@
 }
 #world_popup.dw2io-world-layout .dw2io-wi-recursion-row {
   display:grid!important;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);
   align-items:start;
-  gap:9px 10px;
+  column-gap:15px;
+  row-gap:10px;
   box-sizing:border-box;
   width:100%;
   min-width:0;
   margin:15px 0 0;
 }
+/* Keep native checkbox labels intact. Flatten only the two native wrappers
+   so labels can follow a visually consistent, row-major grid. */
 #world_popup.dw2io-world-layout .dw2io-wi-recursion-row > .flex-container,
 #world_popup.dw2io-world-layout .dw2io-wi-recursion-row > .flex-container > .flex-container {
   display:contents!important;
@@ -1107,18 +1110,34 @@
   max-width:100%;
   margin:0!important;
   padding:0!important;
-  gap:5px!important;
-  font-size:11px;
+  gap:4px!important;
+  font-size:10px;
   line-height:1.4;
+  white-space:nowrap;
 }
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox:has(input[name="delay_until_recursion"]) {order:1}
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox:has(input[name="preventRecursion"]) {order:2}
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox:has(input[name="excludeRecursion"]) {order:3}
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox:has(input[name="ignoreBudget"]) {order:4}
 #world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox > input {
   flex:0 0 auto;
   margin:0!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox > span {
-  flex:1 1 auto;
+  flex:0 1 auto;
   min-width:0;
-  overflow-wrap:anywhere;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+}
+@media (max-width:380px) {
+  #world_popup.dw2io-world-layout .dw2io-wi-recursion-row {
+    grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);
+    column-gap:13px;
+  }
+  #world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox {
+    font-size:9px;
+    gap:3px!important;
+  }
 }
 #world_popup.dw2io-world-layout .dw2io-wi-match-conditional {
   display:grid;
@@ -1130,63 +1149,78 @@
   min-width:0;
   margin:0;
 }
-/* Content header: [native maximize] [Content] [live tokens & UID]
-   followed by TT's original explanatory label on its own quiet line. */
+/* One compact caption row directly above the native editor:
+   [maximize icon] [content] [live Tokens + UID] [native description].
+   Use the real token counter and UID: never clone, hardcode or detach them. */
 #world_popup.dw2io-world-layout .dw2io-wi-content-caption {
   display:flex!important;
-  flex-wrap:wrap!important;
+  flex-wrap:nowrap!important;
   align-items:center!important;
   justify-content:flex-start!important;
   box-sizing:border-box;
   width:100%;
   min-width:0;
   max-width:100%;
-  gap:3px 9px!important;
+  gap:3px!important;
+  margin:0!important;
+  overflow:hidden;
+  white-space:nowrap!important;
+  font-size:clamp(8px,2.35vw,10px)!important;
+  line-height:1.3!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:first-child {
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  flex:0 0 auto;
-  gap:5px!important;
-  min-width:0;
+  display:contents!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:first-child > .editor_maximize {
   order:-1;
   position:static!important;
   display:inline-flex!important;
+  flex:0 0 15px;
   align-items:center!important;
   justify-content:center!important;
-  width:22px!important;
-  height:22px!important;
-  min-width:22px!important;
+  width:15px!important;
+  height:18px!important;
+  min-width:15px!important;
   margin:0!important;
   padding:0!important;
-  font-size:12px!important;
+  font-size:10px!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:first-child > .mdhotkey_location {
   order:0;
-  font-size:12px;
+  display:inline-block!important;
+  flex:0 0 auto;
+  font-size:inherit!important;
+  line-height:inherit!important;
+  white-space:nowrap!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:nth-child(2) {
-  display:inline-block;
-  flex:0 1 auto;
+  order:1;
+  display:inline-block!important;
+  flex:0 0 auto;
   min-width:0;
-  font-size:11px;
-  line-height:1.5;
-  white-space:normal;
+  font-size:inherit!important;
+  line-height:inherit!important;
+  white-space:nowrap!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:nth-child(2) span {
+  font-size:inherit!important;
+  line-height:inherit!important;
+  white-space:nowrap!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-content-caption > span[data-i18n*="What this keyword should mean"] {
-  display:block;
-  flex:1 1 100%;
+  order:2;
+  display:inline-block!important;
+  flex:0 0 auto;
   box-sizing:border-box;
   min-width:0;
-  margin:1px 0 0;
-  opacity:.72;
-  font-size:10px;
-  line-height:1.4;
+  margin:0!important;
+  padding:0!important;
+  opacity:.78;
+  font-size:inherit!important;
+  line-height:inherit!important;
   text-align:left;
-  overflow-wrap:anywhere;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
 }
 #world_popup.dw2io-world-layout .world_entry_edit>[name="WIEntryBottomControls"] {
   box-sizing:border-box;
