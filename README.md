@@ -17,7 +17,11 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.16-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.17-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.17-beta.1 · 修复全局世界书选择框消失
+
+根据 iPhone 复测截图，v0.1.16 修改原生 Select2 内部渲染容器后出现全局世界书选择框不显示的问题。本次撤销全部针对 `#WIMultiSelector` 的新增内部样式，也不再强制更改其父级 `#wiTopBlock` 整体布局，优先恢复 v0.1.15 已能显示的原生多选框。仅保留针对第二个激活设置区的标题栏全宽修饰，并隐藏世界书编辑区起始的原生分隔线。已验收的正文、高级设置、管理工具及数据逻辑都不动。尚需 iPhone 实机复测选择框是否恢复；此前高度略窄的问题留待稳定后单独处理。
 
 ## v0.1.16-beta.1 · 世界书顶部收尾：全局选择框高度与单击展开宽度
 
