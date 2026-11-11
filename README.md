@@ -17,7 +17,14 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.19-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.20-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.20-beta.1 · 全局世界书选择框 30px 与选中项末尾空白行修复
+
+- 将开启「世界书 · 清透布局」时的顶部全局 Select2 选择框最小高度改为 **30px**、上下内边距各 1px；无选中项时将原生提示输入框的文字基线轻微上移，使提示更接近垂直居中。
+- 修复选中一项后多出一行、两项后多出额外第三行的现象：保留 Select2 原生搜索输入框和全部事件，仅当**已有选中项且下拉框关闭**时，将末尾搜索项暂时移出文档排版流，避免其额外撑出一行。打开选择下拉框时自动恢复原生输入布局以继续搜索。
+- 已选世界书的标签上下间距略收紧，支持长标签按原生规则排版；不硬性限制总高度。
+- 只修改顶部世界书选择器 CSS，不改世界书列表、分组、正文、高级设置或数据逻辑。已完成静态校验，待 iPhone 验证 Select2 展开、搜索及多选增删表现。
 
 ## v0.1.19-beta.1 · 全局世界书选择框高度再收紧
 
