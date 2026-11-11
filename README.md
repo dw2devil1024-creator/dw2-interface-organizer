@@ -17,7 +17,15 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.15-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.16-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.16-beta.1 · 世界书顶部收尾：全局选择框高度与单击展开宽度
+
+- **全局世界书多选框**：只在「世界书 · 清透布局」启用时，增大原生 Select2 选择框最小高度至 44px，并微调内部文字的垂直空间。避免“没有激活的世界书”等占位字样贴边或被截断；不触碰世界书选项及数据。
+- **单击展开**：针对 iPhone 窄屏，让「全局世界信息/知识书激活设置」所在原生容器及其折叠标题，无论展开与否均占满可用宽度。原生展开逻辑和展开后的六项滑块及勾选项全部保持不变。
+- **移除细线**：仅隐藏世界书编辑区开头的原生 `hr` 分隔线，不删除任何功能区。
+- **回退**：所有新 CSS 仅在独立清透布局 class 存在时生效；关闭开关则恢复原生布局。
+- **验收**：已静态核对 CSS/JS 与版本引用，仍需 iPhone 实机观察占位文字、折叠前后宽度及是否有意外溢出。
 
 ## v0.1.15-beta.1 · 世界书正文框高度微调
 
