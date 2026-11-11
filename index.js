@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.12-beta.1';
+const VERSION = '0.1.13-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -545,11 +545,83 @@ function restoreWorldEntry(editor, layout) {
   }
   layout.group.classList.remove('dw2io-wi-advanced-groups');
   layout.filters.classList.remove('dw2io-wi-advanced-filters');
+  if (layout.contentSettings) {
+    layout.contentSettings.caption.classList.remove('dw2io-wi-content-caption');
+    layout.contentSettings.overrides.classList.remove('dw2io-wi-overrides-relocated');
+    layout.contentSettings.details.remove();
+  }
   layout.details.remove();
   worldEntryLayouts.delete(editor);
 }
 function restoreWorldEntries() {
   for (const [editor, layout] of [...worldEntryLayouts]) restoreWorldEntry(editor, layout);
+}
+
+/* This is the native editor's keyword/matching setup, not a second editor.
+ * Move original live controls into a compact accordion; retain all listeners.
+ * The primary/secondary keyword controls stay visible above the accordion. */
+function addWorldContentSettings(contentRow, moved) {
+  const keywords = contentRow.querySelector(':scope > [name="keywordsAndLogicBlock"]');
+  const overrides = contentRow.querySelector(':scope > [name="perEntryOverridesBlock"]');
+  const contentBlock = contentRow.querySelector(':scope > [name="contentAndCharFilterBlock"]');
+  if (!keywords || !overrides || !contentBlock) return null;
+  const findControl = (base, selector) =>
+    base.querySelector(selector)?.closest('.world_entry_form_control');
+  const first = [
+    findControl(keywords,'select[name="entryLogicType"]'),
+    findControl(overrides,'input[name="scanDepth"]'),
+    findControl(overrides,'select[name="caseSensitive"]'),
+    findControl(overrides,'select[name="matchWholeWords"]')
+  ];
+  const second = [
+    findControl(overrides,'select[name="useGroupScoring"]'),
+    findControl(overrides,'input[name="automationId"]')
+  ];
+  const optional = [
+    findControl(overrides,'input[name="outletName"]'),
+    findControl(overrides,'input[name="delayUntilRecursionLevel"]')
+  ].filter(Boolean);
+  const contentCaption = contentBlock.querySelector('.world_entry_form_token_counter')
+    ?.closest('.flex-container.flexnowrap');
+  const boxGroup = contentCaption && [...contentCaption.children].find(node =>
+    node.querySelector('input[name="excludeRecursion"]') &&
+    node.querySelector('input[name="preventRecursion"]') &&
+    node.querySelector('input[name="delay_until_recursion"]') &&
+    node.querySelector('input[name="ignoreBudget"]')
+  );
+  if (!first.every(Boolean) || !second.every(Boolean) || !contentCaption ||
+      !boxGroup || !contentBlock.querySelector('textarea[name="content"]')) return null;
+
+  const details = el('details','dw2io-wi-content-settings');
+  const summary = el('summary','dw2io-wi-content-settings-summary','正文设置');
+  const body = el('div','dw2io-wi-content-settings-body');
+  const matchRow = el('div','dw2io-wi-match-four');
+  const extraRow = el('div','dw2io-wi-match-two');
+  const recursion = el('div','dw2io-wi-recursion-row');
+  details.append(summary,body);
+  body.append(matchRow,extraRow,recursion);
+  contentBlock.insertAdjacentElement('beforebegin',details);
+  for (const item of first) moveWorldEntryNode(item,matchRow,moved);
+  for (const item of second) moveWorldEntryNode(item,extraRow,moved);
+  moveWorldEntryNode(boxGroup,recursion,moved);
+
+  // Optional TT-specific fields are preserved inside the accordion, only
+  // appearing when TT's native conditions show them.
+  if (optional.length) {
+    const conditions = el('div','dw2io-wi-match-conditional');
+    body.append(conditions);
+    for (const item of optional) moveWorldEntryNode(item,conditions,moved);
+  }
+
+  // Keep the real maximize icon, live token counter, and UID. This only
+  // rearranges their caption and exposes TT's existing explanatory label.
+  const hiddenDescription = contentBlock.querySelector(
+    'small.displayNone > span[data-i18n*="What this keyword should mean"]'
+  );
+  if (hiddenDescription) moveWorldEntryNode(hiddenDescription,contentCaption,moved);
+  contentCaption.classList.add('dw2io-wi-content-caption');
+  overrides.classList.add('dw2io-wi-overrides-relocated');
+  return {details,caption:contentCaption,overrides};
 }
 function addWorldAdvanced(editor) {
   if (!editor || worldEntryLayouts.has(editor)) return;
@@ -585,7 +657,8 @@ function addWorldAdvanced(editor) {
   if (sources) moveWorldEntryNode(sources,body,moved);
   group.classList.add('dw2io-wi-advanced-groups');
   filters.classList.add('dw2io-wi-advanced-filters');
-  worldEntryLayouts.set(editor,{details,moved,group,filters});
+  const contentSettings = addWorldContentSettings(content,moved);
+  worldEntryLayouts.set(editor,{details,moved,group,filters,contentSettings});
 }
 function syncWorldAdvanced() {
   if (!worldList?.isConnected) return;
