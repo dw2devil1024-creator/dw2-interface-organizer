@@ -828,22 +828,55 @@
   max-width:100%;
   margin:12px 0 0!important;
 }
+/* Align the two native multi-selects on a shared label baseline, while
+   letting their heights grow when selections create additional chips. */
 #world_popup.dw2io-world-layout .dw2io-wi-advanced-filters>div {
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
   box-sizing:border-box;
   width:100%!important;
   min-width:0!important;
   max-width:100%;
+  margin:0!important;
+  padding:0!important;
+  gap:6px!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-advanced-filters>div>.flex-container {
-  align-items:center;
-  min-height:19px;
+  display:flex!important;
+  box-sizing:border-box;
+  align-items:center!important;
+  height:22px!important;
+  min-height:22px!important;
+  max-height:22px!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-advanced-filters>div>.range-block-range {
+  display:flex!important;
+  box-sizing:border-box;
+  align-items:flex-start!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  min-height:40px;
+  margin:0!important;
+  padding:0!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-advanced-filters label[for="__invisible"]{display:none!important}
 #world_popup.dw2io-world-layout .dw2io-wi-advanced-filters .select2-container {
   box-sizing:border-box;
+  align-self:flex-start;
   width:100%!important;
   min-width:0!important;
   max-width:100%!important;
+  margin:0!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-advanced-filters .select2-selection {
+  box-sizing:border-box!important;
+  min-height:40px!important;
+  margin:0!important;
 }
 #world_popup.dw2io-world-layout .dw2io-wi-exclusion-row {
   display:flex;
@@ -860,12 +893,76 @@
   gap:4px;
   margin:0!important;
 }
+/* The original matching-source accordion remains native and clickable.
+   Only its text size and the two groups of three checkbox labels change. */
 #world_popup.dw2io-world-layout .dw2io-wi-advanced-body>.inline-drawer.wide100p {
   box-sizing:border-box;
   width:100%;
   min-width:0;
   max-width:100%;
   margin:9px 0 0;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-advanced-body>.inline-drawer.wide100p
+> .inline-drawer-header > strong {
+  font-size:12px!important;
+  font-weight:500!important;
+  line-height:1.4!important;
+  letter-spacing:.04em;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-advanced-body>.inline-drawer.wide100p
+> .inline-drawer-content {
+  box-sizing:border-box;
+  flex-direction:column!important;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  gap:8px!important;
+  padding:8px 0 5px!important;
+}
+/* Leave the native content display property untouched: TT controls its
+   display:none/display:flex when this inner drawer is opened or closed. */
+#world_popup.dw2io-world-layout .dw2io-wi-advanced-body>.inline-drawer.wide100p
+> .inline-drawer-content > small {
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:start;
+  column-gap:7px!important;
+  row-gap:6px!important;
+  box-sizing:border-box;
+  flex:none!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%;
+  margin:0!important;
+  padding:0!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-advanced-body>.inline-drawer.wide100p
+> .inline-drawer-content > small > label.checkbox {
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:4px!important;
+  box-sizing:border-box;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%;
+  margin:0!important;
+  padding:0!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-advanced-body>.inline-drawer.wide100p
+> .inline-drawer-content > small > label.checkbox > input {
+  flex:0 0 auto!important;
+  margin:0!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-advanced-body>.inline-drawer.wide100p
+> .inline-drawer-content > small > label.checkbox > span {
+  display:block;
+  flex:1 1 auto;
+  min-width:0;
+  font-size:11px!important;
+  line-height:1.4;
+  white-space:normal;
+  overflow-wrap:anywhere;
 }
 #world_popup.dw2io-world-layout .world_entry_edit>[name="WIEntryBottomControls"] {
   box-sizing:border-box;
