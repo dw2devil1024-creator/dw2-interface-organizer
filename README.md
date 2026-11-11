@@ -17,7 +17,16 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.17-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.18-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.18-beta.1 · 全局世界书选择框高度与多余输入底框修复
+
+根据 iPhone 深色与咖啡色主题实测图，已确认 TT 原生 `select2-overrides.css` 对 Select2 的可输入搜索区域使用背景与边框。未选择世界书时此输入区域成为一条嵌套的深色长框，选择世界书后则可能在末尾留下深色小方块。本版只在世界书清透布局开启时，针对顶部全局世界书选择框：
+
+- 将其外层最小高度收紧至 40px，让无选中项时更加紧凑。保留内容增加时自然增高。
+- 只对内部真实搜索 textarea 移除背景、边框、圆角和阴影，将输入区域高度定为 26px，并取消额外上下内边距。
+- **不隐藏、不重建** 原生 Select2 搜索输入，不锁死动态输入宽度，原生多选、搜索、键盘和删除选择功能继续保留。
+- 单击展开原生控制、世界书正文与高级设置、已验收的编辑器布局均不变。代码静态检查通过，需 iPhone 实机验收不同主题、空选项以及选择后的表现。
 
 ## v0.1.17-beta.1 · 修复全局世界书选择框消失
 
