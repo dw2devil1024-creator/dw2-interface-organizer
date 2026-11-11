@@ -606,7 +606,7 @@ function attachAccessPoints() {
   header.append(heading,arrow);
   const body=el('div','inline-drawer-content dw2io-settings-content');
   body.hidden=true;
-  body.append(el('p','dw2io-settings-version','三横菜单 · 魔法棒 · 扩展设置  |  v'+VERSION));
+  body.append(el('p','dw2io-settings-version','三横菜单 · 魔法棒 · 扩展设置 · 世界书  |  v'+VERSION));
   const toggleRow=el('label','dw2io-native-switch');
   const checkbox=el('input');checkbox.type='checkbox';checkbox.id='dw2io-enabled-toggle';
   checkbox.checked=state.enabled;
