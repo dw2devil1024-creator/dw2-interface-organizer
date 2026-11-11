@@ -269,11 +269,11 @@
   min-width:0!important;
   max-width:100%!important;
 }
-/* Row one: full-width lorebook selector, then Search + Priority side by side.
+/* Row one: book selector + compact Search + Priority in one line.
    Search and Priority are the original TT nodes, moved reversibly. */
 #world_popup.dw2io-world-layout .dw2io-wi-topline {
   display:grid!important;
-  grid-template-columns:minmax(0,1fr) minmax(94px,.68fr)!important;
+  grid-template-columns:minmax(0,1.55fr) minmax(0,.95fr) minmax(0,.8fr)!important;
   grid-auto-flow:row;
   align-items:center!important;
   gap:7px!important;
@@ -288,7 +288,7 @@
 }
 #world_popup.dw2io-world-layout .dw2io-wi-topline > #world_editor_select,
 #world_popup.dw2io-world-layout .dw2io-wi-topline > .select2-container {
-  grid-column:1 / -1;
+  grid-column:1;
   justify-self:stretch;
   box-sizing:border-box!important;
   width:100%!important;
@@ -301,21 +301,15 @@
   min-height:34px!important;
   max-width:100%;
 }
-#world_popup.dw2io-world-layout .dw2io-wi-topline > #world_info_search {
-  grid-column:1;
-  justify-self:stretch;
-  box-sizing:border-box!important;
-  width:100%!important;
-  min-width:0!important;
-  max-width:100%!important;
-  flex:none!important;
-  height:35px!important;
-  min-height:35px!important;
-  margin:0!important;
-  padding:5px 9px!important;
-  font:inherit;
+#world_popup.dw2io-world-layout .dw2io-wi-topline .select2-selection__rendered {
+  display:block;
+  min-width:0;
+  width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
 }
-#world_popup.dw2io-world-layout .dw2io-wi-topline > #world_info_sort_order {
+#world_popup.dw2io-world-layout .dw2io-wi-topline > #world_info_search {
   grid-column:2;
   justify-self:stretch;
   box-sizing:border-box!important;
@@ -326,7 +320,21 @@
   height:35px!important;
   min-height:35px!important;
   margin:0!important;
-  padding:3px 6px!important;
+  padding:5px 8px!important;
+  font:inherit;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-topline > #world_info_sort_order {
+  grid-column:3;
+  justify-self:stretch;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  flex:none!important;
+  height:35px!important;
+  min-height:35px!important;
+  margin:0!important;
+  padding:3px 5px!important;
 }
 /* Hide the now-empty native original tools row, not its buttons. */
 #world_popup.dw2io-world-layout .dw2io-wi-original-tools {
@@ -699,7 +707,7 @@
 }
 @media (max-width:440px) {
   #world_popup.dw2io-world-layout .dw2io-wi-topline {
-    grid-template-columns:minmax(0,1fr) minmax(88px,.72fr)!important;
+    grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,.83fr)!important;
     gap:6px!important;
   }
   #world_popup.dw2io-world-layout .world_entry_form.wi-card-entry {
