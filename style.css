@@ -240,9 +240,9 @@
 
 
 /* =========================================================
-   DW2 v0.1.8 · World Info clean layout
-   Opt-in. TT theme colors only. Original controls remain native.
-   No CSS applies without #world_popup.dw2io-world-layout.
+   DW2 · World Info compact layout v0.1.9
+   Scoped and reversible. Never override TT's world-info data handlers.
+   Use existing SmartTheme colors for both light and dark themes.
    ========================================================= */
 #dw2io-settings .dw2io-world-settings-switch {
   display:flex;
@@ -254,151 +254,357 @@
   min-width:0;
   line-height:1.55;
 }
-
-/* Top-level lorebook selector and its native action buttons. */
-#world_popup.dw2io-world-layout > .flex-container.alignitemscenter:nth-of-type(1),
-#world_popup.dw2io-world-layout > .flex-container.alignitemscenter:nth-of-type(2) {
-  display:flex!important;
-  flex-wrap:wrap!important;
+#world_popup.dw2io-world-layout {
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow-x:clip;
+}
+#world_popup.dw2io-world-layout > .flex-container,
+#world_popup.dw2io-world-layout #world_popup_entries_list,
+#world_popup.dw2io-world-layout .world_entry,
+#world_popup.dw2io-world-layout .world_entry_form {
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+/* Row one: book selector + compact Search + Priority in one line.
+   Search and Priority are the original TT nodes, moved reversibly. */
+#world_popup.dw2io-world-layout .dw2io-wi-topline {
+  display:grid!important;
+  grid-template-columns:minmax(0,1.55fr) minmax(0,.95fr) minmax(0,.8fr)!important;
+  grid-auto-flow:row;
   align-items:center!important;
   gap:7px!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:2px 0 6px!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-topline > input[type="file"],
+#world_popup.dw2io-world-layout .dw2io-wi-topline > small[data-i18n="or"] {
+  display:none!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-topline > #world_editor_select,
+#world_popup.dw2io-world-layout .dw2io-wi-topline > .select2-container {
+  grid-column:1;
+  justify-self:stretch;
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-topline .select2-selection {
+  box-sizing:border-box!important;
+  min-height:34px!important;
+  max-width:100%;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-topline .select2-selection__rendered {
+  display:block;
+  min-width:0;
+  width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-topline > #world_info_search {
+  grid-column:2;
+  justify-self:stretch;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  flex:none!important;
+  height:35px!important;
+  min-height:35px!important;
+  margin:0!important;
+  padding:5px 8px!important;
+  font:inherit;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-topline > #world_info_sort_order {
+  grid-column:3;
+  justify-self:stretch;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  flex:none!important;
+  height:35px!important;
+  min-height:35px!important;
+  margin:0!important;
+  padding:3px 5px!important;
+}
+/* Hide the now-empty native original tools row, not its buttons. */
+#world_popup.dw2io-world-layout .dw2io-wi-original-tools {
+  display:none!important;
+}
+/* Row two: unobtrusive native details/summary. No JS visibility hacks. */
+#world_popup.dw2io-world-layout .dw2io-wi-tools {
+  box-sizing:border-box;
   width:100%;
   min-width:0;
-}
-#world_popup.dw2io-world-layout #world_editor_select,
-#world_popup.dw2io-world-layout #world_editor_select ~ .select2-container {
-  order:-5;
-  flex:1 1 100%!important;
-  width:100%!important;
   max-width:100%;
-  min-width:0!important;
-  box-sizing:border-box;
+  margin:2px 0 9px;
+  padding:0;
 }
-#world_popup.dw2io-world-layout #world_editor_select ~ .select2-container .select2-selection {
-  min-height:37px;
-  display:flex;
+#world_popup.dw2io-world-layout .dw2io-wi-tools-summary {
+  display:inline-flex!important;
   align-items:center;
-  max-width:100%;
-}
-#world_popup.dw2io-world-layout #world_info_search {
-  order:-5;
-  flex:1 1 100%!important;
-  width:100%!important;
-  min-width:0!important;
-  min-height:40px;
+  gap:7px;
   box-sizing:border-box;
-  margin:4px 0 3px!important;
-}
-#world_popup.dw2io-world-layout #world_info_sort_order {
-  flex:1 1 140px!important;
-  width:auto!important;
+  min-height:34px;
   max-width:100%;
-  min-width:120px!important;
-  min-height:35px;
-  margin:0!important;
+  padding:5px 11px;
+  font:inherit;
+  font-size:12px;
+  line-height:1.4;
+  color:var(--SmartThemeBodyColor,inherit);
+  background:color-mix(in srgb,var(--SmartThemeBlurTintColor,transparent) 12%,transparent);
+  border:1px solid var(--SmartThemeBorderColor,currentColor);
+  border-radius:8px;
+  cursor:pointer;
+  list-style:none;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
 }
-#world_popup.dw2io-world-layout > .flex-container.alignitemscenter:nth-of-type(1) > .menu_button,
-#world_popup.dw2io-world-layout > .flex-container.alignitemscenter:nth-of-type(2) > .menu_button {
-  flex:0 0 auto;
-  margin:0!important;
-  min-width:30px;
-  min-height:33px;
-  display:inline-flex;
-  justify-content:center;
-  align-items:center;
+#world_popup.dw2io-world-layout .dw2io-wi-tools-summary::-webkit-details-marker {
+  display:none;
 }
-#world_popup.dw2io-world-layout #world_info_pagination {
+#world_popup.dw2io-world-layout .dw2io-wi-tools-summary::marker {
+  content:"";
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-hint {
+  opacity:.56;
+  font-size:10px;
+  font-weight:400;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-chevron {
+  opacity:.75;
+  font-size:15px;
+  transition:transform .16s ease;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools[open] .dw2io-wi-tools-chevron {
+  transform:rotate(180deg);
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-strip {
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:5px!important;
+  box-sizing:border-box;
   width:100%;
-  margin:10px 0 8px;
+  min-width:0;
+  max-width:100%;
+  padding:9px 3px 7px;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x;
+  scrollbar-width:thin;
 }
+#world_popup.dw2io-world-layout .dw2io-wi-tools-strip > .menu_button {
+  display:inline-flex!important;
+  flex:0 0 auto!important;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  min-width:32px!important;
+  min-height:32px!important;
+  width:auto!important;
+  height:32px!important;
+  margin:0!important;
+  padding:4px 7px!important;
+  white-space:nowrap;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-strip > #world_info_pagination {
+  display:flex!important;
+  flex:0 0 auto!important;
+  width:max-content!important;
+  max-width:none!important;
+  min-width:max-content;
+  align-items:center;
+  white-space:nowrap;
+  margin:0 0 0 4px!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-tools-strip #world_info_pagination select {
+  min-width:75px;
+  max-width:120px;
+}
+/* Native entries: compact, avoid wide descendants forcing sideways page pan. */
 #world_popup.dw2io-world-layout #world_popup_entries_list {
+  width:100%;
   min-width:0;
   padding:0 1px;
 }
-
-/* Keep the native World Info header input/status/controls, just make their
-   relative widths sensible on phones. Do not change handlers or DOM order. */
 #world_popup.dw2io-world-layout .world_entry_form.wi-card-entry {
+  position:relative;
   box-sizing:border-box;
   width:100%;
   min-width:0;
-  margin:0 0 11px;
-  padding:9px 10px;
-  border-radius:11px;
-  border:1px solid var(--SmartThemeBorderColor, currentColor);
-  background:color-mix(in srgb, var(--SmartThemeBlurTintColor,transparent) 10%, transparent);
+  margin:0 0 9px;
+  padding:8px 9px;
+  border-radius:10px;
+  border:1px solid var(--SmartThemeBorderColor,currentColor);
+  background:color-mix(in srgb,var(--SmartThemeBlurTintColor,transparent) 9%,transparent);
 }
+/* Keep all THREE original native action nodes. Place them together at
+   top-right with CSS only: move/copy to other book, duplicate, delete.
+   No event listener or original DOM parent changes. */
 #world_popup.dw2io-world-layout .world_entry_form > .inline-drawer > .inline-drawer-header {
+  position:relative;
+  box-sizing:border-box;
   display:flex!important;
   flex-wrap:wrap!important;
   align-items:flex-start!important;
-  gap:7px!important;
-  padding:3px 0 7px!important;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  gap:4px!important;
+  padding:5px 0 3px!important;
+}
+#world_popup.dw2io-world-layout .world_entry_form .inline-drawer-header > :is(
+  .move_entry_button,
+  .duplicate_entry_button,
+  .delete_entry_button
+) {
+  position:absolute!important;
+  top:2px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  width:30px!important;
+  min-width:30px!important;
+  height:30px!important;
+  min-height:30px!important;
+  margin:0!important;
+  padding:4px!important;
+  border:0!important;
+  border-radius:6px!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  font-size:14px!important;
+  z-index:1;
+}
+#world_popup.dw2io-world-layout .world_entry_form .inline-drawer-header > .move_entry_button {
+  right:66px!important;
+}
+#world_popup.dw2io-world-layout .world_entry_form .inline-drawer-header > .duplicate_entry_button {
+  right:33px!important;
+}
+#world_popup.dw2io-world-layout .world_entry_form .inline-drawer-header > .delete_entry_button {
+  right:0!important;
 }
 #world_popup.dw2io-world-layout .world_entry_form .inline-drawer-header > .world_entry_thin_controls {
-  min-width:0;
-  flex:1 1 calc(100% - 36px);
+  flex:1 1 100%!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
 }
 #world_popup.dw2io-world-layout .world_entry_form .inline-drawer-header > .world_entry_thin_controls > .flex-container {
   display:flex!important;
   flex-wrap:wrap!important;
-  min-width:0;
-  gap:8px;
-}
-#world_popup.dw2io-world-layout .WIEntryTitleAndStatus {
-  flex:1 1 100%!important;
-  min-width:0;
   width:100%;
+  min-width:0;
+  gap:6px;
+}
+/* Title and blue status dropdown must share one visual height. */
+#world_popup.dw2io-world-layout .WIEntryTitleAndStatus {
+  display:flex!important;
+  flex:1 1 100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  width:100%!important;
+  align-items:center!important;
+  gap:7px!important;
+  margin:7px 0 8px;
 }
 #world_popup.dw2io-world-layout .WIEntryTitleAndStatus > .flex-container {
-  min-width:0;
+  min-width:0!important;
+  flex:1 1 auto!important;
+}
+#world_popup.dw2io-world-layout .WIEntryTitleAndStatus textarea[name="comment"],
+#world_popup.dw2io-world-layout .WIEntryTitleAndStatus select[name="entryStateSelector"] {
+  box-sizing:border-box!important;
+  height:36px!important;
+  min-height:36px!important;
+  margin:0!important;
+  line-height:1.45!important;
 }
 #world_popup.dw2io-world-layout .WIEntryTitleAndStatus textarea[name="comment"] {
-  min-width:0;
-  width:100%;
-  box-sizing:border-box;
-  min-height:35px;
+  display:block;
+  width:100%!important;
+  min-width:0!important;
+  padding:7px 9px!important;
   resize:vertical;
 }
+#world_popup.dw2io-world-layout .WIEntryTitleAndStatus select[name="entryStateSelector"] {
+  flex:0 0 auto;
+  min-width:68px!important;
+  max-width:95px!important;
+  padding:4px 5px!important;
+}
+/* One original row for Position, Depth, Order, Trigger %.
+   On narrow phones shrink fields rather than wrap the row into two. */
 #world_popup.dw2io-world-layout .WIEnteryHeaderControls {
   display:grid!important;
-  grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));
-  gap:7px!important;
-  width:100%;
-  max-width:100%;
-  min-width:0;
+  grid-template-columns:minmax(0,2.35fr) repeat(3,minmax(0,.75fr))!important;
+  align-items:end;
+  gap:6px!important;
+  box-sizing:border-box;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0 0 2px;
 }
 #world_popup.dw2io-world-layout .WIEnteryHeaderControls > .world_entry_form_control {
   display:flex!important;
   flex-direction:column!important;
   align-items:stretch!important;
-  min-width:0;
-  gap:4px;
-}
-#world_popup.dw2io-world-layout .WIEnteryHeaderControls .world_entry_form_control > :is(input,select) {
-  width:100%!important;
-  min-width:0!important;
-  max-width:none!important;
-  margin:0!important;
   box-sizing:border-box;
-  min-height:33px;
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  gap:4px!important;
 }
 #world_popup.dw2io-world-layout .WIEnteryHeaderControls .WIEntryHeaderTitleMobile {
   display:block!important;
-  font-size:11px;
-  line-height:1.3;
-  opacity:.7;
+  min-width:0;
+  width:100%;
+  font-size:10px;
+  line-height:1.4;
+  opacity:.75;
   white-space:nowrap;
   overflow:hidden;
-  text-overflow:ellipsis;
+  text-overflow:clip;
+}
+#world_popup.dw2io-world-layout .WIEnteryHeaderControls .world_entry_form_control > :is(input,select) {
+  display:block;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:4px 4px!important;
+  margin:0!important;
+  font-size:12px!important;
+}
+#world_popup.dw2io-world-layout .WIEnteryHeaderControls .world_entry_form_control > input {
+  text-align:center;
 }
 #world_popup.dw2io-world-layout .world_entry_form .inline-drawer-outlet {
+  box-sizing:border-box;
   min-width:0;
+  max-width:100%;
   flex-wrap:wrap;
   gap:9px;
   padding:4px 0 0!important;
 }
-
 /* A tiny segmented bar, injected into each expanded native entry only. */
 #world_popup.dw2io-world-layout .dw2io-wi-tabs {
   display:grid!important;
@@ -500,11 +706,20 @@
   display:none!important;
 }
 @media (max-width:440px) {
-  #world_popup.dw2io-world-layout .WIEnteryHeaderControls {
-    grid-template-columns:repeat(2,minmax(0,1fr));
+  #world_popup.dw2io-world-layout .dw2io-wi-topline {
+    grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,.83fr)!important;
+    gap:6px!important;
   }
   #world_popup.dw2io-world-layout .world_entry_form.wi-card-entry {
-    padding:8px;
+    padding:7px 7px 8px;
+  }
+  #world_popup.dw2io-world-layout .WIEnteryHeaderControls {
+    grid-template-columns:minmax(0,2.05fr) repeat(3,minmax(0,.75fr))!important;
+    gap:4px!important;
+  }
+  #world_popup.dw2io-world-layout .WIEnteryHeaderControls .world_entry_form_control > :is(input,select) {
+    padding:4px 2px!important;
+    font-size:11px!important;
   }
   #world_popup.dw2io-world-layout .world_entry_edit > [name="keywordsAndLogicBlock"] > .world_entry_form_control,
   #world_popup.dw2io-world-layout .world_entry_edit > [name="perEntryOverridesBlock"] > .world_entry_form_control {
