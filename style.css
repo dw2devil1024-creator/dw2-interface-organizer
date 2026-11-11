@@ -964,6 +964,231 @@
   white-space:normal;
   overflow-wrap:anywhere;
 }
+
+/* v0.1.13 · native content settings fold; only the active WI layout.
+   Original inputs, checkboxes, counters and textarea remain live. */
+#world_popup.dw2io-world-layout .dw2io-wi-overrides-relocated {
+  display:none!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-settings {
+  display:block;
+  flex:0 0 100%;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin:5px 0 3px;
+  padding:0;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-settings-summary {
+  display:flex!important;
+  align-items:center;
+  justify-content:space-between;
+  box-sizing:border-box;
+  width:100%;
+  min-height:34px;
+  margin:0;
+  padding:8px 2px;
+  border:0!important;
+  border-top:1px solid color-mix(in srgb,var(--SmartThemeBorderColor,currentColor) 40%,transparent)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:var(--SmartThemeBodyColor,inherit);
+  font:inherit;
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.04em;
+  list-style:none;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-settings-summary::-webkit-details-marker {display:none}
+#world_popup.dw2io-world-layout .dw2io-wi-content-settings-summary::marker {content:''}
+#world_popup.dw2io-world-layout .dw2io-wi-content-settings-summary::after {
+  content:'+';
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  opacity:.6;
+  font-size:18px;
+  font-weight:300;
+  line-height:1;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-settings[open] > .dw2io-wi-content-settings-summary::after {
+  content:'−';
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-settings-summary:focus-visible {
+  outline:2px solid var(--SmartThemeBodyColor,currentColor);
+  outline-offset:2px;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-settings-body {
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  padding:9px 0 8px;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-match-four {
+  display:grid!important;
+  grid-template-columns:minmax(0,1.04fr) minmax(0,.97fr) minmax(0,1.06fr) minmax(0,1.06fr);
+  align-items:start;
+  column-gap:5px;
+  width:100%;
+  min-width:0;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-match-two {
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:start;
+  column-gap:9px;
+  width:100%;
+  min-width:0;
+  margin:12px 0 0;
+}
+#world_popup.dw2io-world-layout :is(.dw2io-wi-match-four,.dw2io-wi-match-two,.dw2io-wi-match-conditional) > .world_entry_form_control {
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  box-sizing:border-box;
+  min-width:0!important;
+  max-width:100%;
+  width:100%!important;
+  margin:0!important;
+  gap:5px;
+}
+#world_popup.dw2io-world-layout :is(.dw2io-wi-match-four,.dw2io-wi-match-two) > .world_entry_form_control > small {
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  min-height:18px;
+  font-size:10px!important;
+  line-height:1.3;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+#world_popup.dw2io-world-layout :is(.dw2io-wi-match-four,.dw2io-wi-match-two,.dw2io-wi-match-conditional) > .world_entry_form_control > :is(input,select) {
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:35px!important;
+  min-height:35px!important;
+  margin:0!important;
+  padding:4px 3px!important;
+  font-size:11px!important;
+  text-overflow:ellipsis;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row {
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:start;
+  gap:9px 10px;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  margin:15px 0 0;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row > .flex-container {
+  display:contents!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox {
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin:0!important;
+  padding:0!important;
+  gap:5px!important;
+  font-size:11px;
+  line-height:1.4;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox > input {
+  flex:0 0 auto;
+  margin:0!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-recursion-row label.checkbox > span {
+  flex:1 1 auto;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-match-conditional {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  column-gap:9px;
+  row-gap:8px;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  margin:8px 0 0;
+}
+/* Content header: [native maximize] [Content] [live tokens & UID]
+   followed by TT's original explanatory label on its own quiet line. */
+#world_popup.dw2io-world-layout .dw2io-wi-content-caption {
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  gap:3px 9px!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:first-child {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex:0 0 auto;
+  gap:5px!important;
+  min-width:0;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:first-child > .editor_maximize {
+  order:-1;
+  position:static!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:22px!important;
+  height:22px!important;
+  min-width:22px!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:12px!important;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:first-child > .mdhotkey_location {
+  order:0;
+  font-size:12px;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-caption > span:nth-child(2) {
+  display:inline-block;
+  flex:0 1 auto;
+  min-width:0;
+  font-size:11px;
+  line-height:1.5;
+  white-space:normal;
+}
+#world_popup.dw2io-world-layout .dw2io-wi-content-caption > span[data-i18n*="What this keyword should mean"] {
+  display:block;
+  flex:1 1 100%;
+  box-sizing:border-box;
+  min-width:0;
+  margin:1px 0 0;
+  opacity:.72;
+  font-size:10px;
+  line-height:1.4;
+  text-align:left;
+  overflow-wrap:anywhere;
+}
 #world_popup.dw2io-world-layout .world_entry_edit>[name="WIEntryBottomControls"] {
   box-sizing:border-box;
   width:100%;
