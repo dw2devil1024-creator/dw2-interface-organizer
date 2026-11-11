@@ -17,7 +17,13 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.20-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.21-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.21-beta.1 · 空选世界书提示文字垂直居中微调
+
+- 针对 iPhone 实机截图，在顶部全局世界书选择框**没有选中任何书**时，仅将其原生 Select2 搜索输入的相对垂直偏移从 -1px 调整为 -5px，使提示文字在约 30px 高的外框中更接近视觉居中。
+- 保留已有的 30px 选择框、已选世界书的按项增高规则、多选搜索输入、透明无边框状态，以及正文设置／高级设置／世界书列表的全部现有样式。
+- 仅静态检查通过；最终显示位置以 iPhone 实机验收为准。
 
 ## v0.1.20-beta.1 · 全局世界书选择框 30px 与选中项末尾空白行修复
 
