@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.10-beta.1';
+const VERSION = '0.1.11-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -526,56 +526,79 @@ function mountWorldToolbar(root) {
 
 // No original input, select, switch, or save listener is cloned or relocated.
 // The native world-book Select2 and Resource Library grouping stay untouched.
-const WORLD_TABS = Object.freeze([
-  ['main', '正文'],
-  ['rules', '触发规则'],
-  ['advanced', '高级设置'],
-]);
-function addWorldTabs(editor) {
-  if (!editor || editor.querySelector(':scope > .dw2io-wi-tabs')) return;
-  const tabs = el('div', 'dw2io-wi-tabs');
-  tabs.setAttribute('role', 'group');
-  tabs.setAttribute('aria-label', '世界书条目编辑分区');
-  const buttons = [];
-  const choose = key => {
-    editor.dataset.dw2ioTab = key;
-    for (const button of buttons) {
-      const selected = button.dataset.tab === key;
-      button.setAttribute('aria-pressed', String(selected));
-      button.classList.toggle('dw2io-wi-tab-active', selected);
-    }
-  };
-  for (const [key, label] of WORLD_TABS) {
-    const button = el('button', 'dw2io-wi-tab', label);
-    button.type = 'button'; // Never submit TT's native entry form.
-    button.dataset.tab = key;
-    button.addEventListener('click', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      choose(key);
-    });
-    buttons.push(button);
-    tabs.append(button);
-  }
-  editor.prepend(tabs);
-  choose('main');
+
+/* Native WI nodes are moved, never cloned, and restored by comment markers.
+ * All keyword/trigger widgets stay reachable without a redundant tab bar. */
+const worldEntryLayouts = new Map();
+
+function moveWorldEntryNode(node, target, moved) {
+  const marker = document.createComment('dw2io-entry-original');
+  node.parentNode.insertBefore(marker, node);
+  moved.push([node, marker]);
+  target.append(node);
 }
-function syncWorldTabs() {
-  if (!worldList || !worldList.isConnected) return;
-  for (const editor of worldList.querySelectorAll('.world_entry .world_entry_edit')) {
-    addWorldTabs(editor);
+function restoreWorldEntry(editor, layout) {
+  for (let i = layout.moved.length - 1; i >= 0; i--) {
+    const [node, marker] = layout.moved[i];
+    if (marker.parentNode) marker.parentNode.replaceChild(node, marker);
+    marker.remove();
   }
+  layout.group.classList.remove('dw2io-wi-advanced-groups');
+  layout.filters.classList.remove('dw2io-wi-advanced-filters');
+  layout.details.remove();
+  worldEntryLayouts.delete(editor);
+}
+function restoreWorldEntries() {
+  for (const [editor, layout] of [...worldEntryLayouts]) restoreWorldEntry(editor, layout);
+}
+function addWorldAdvanced(editor) {
+  if (!editor || worldEntryLayouts.has(editor)) return;
+  const children = [...editor.children];
+  const content = children.find(node => node.matches('.flex-container.wide100p.alignitemscenter')
+    && node.querySelector('textarea[name="content"]'));
+  const group = children.find(node => node.matches('.flex-container.wide100p.flexGap10')
+    && node.querySelector('input[name="group"]')
+    && node.querySelector('input[name="groupWeight"]')
+    && node.querySelector('input[name="sticky"]')
+    && node.querySelector('input[name="cooldown"]')
+    && node.querySelector('input[name="delay"]'));
+  const filters = children.find(node => node.matches('.flex-container.wide100p.flexGap10')
+    && node.querySelector('select[name="characterFilter"]')
+    && node.querySelector('select[name="triggers"]'));
+  const groupControl = group?.querySelector('input[name="group"]')?.closest('.flex-container.flexFlowColumn');
+  const override = group?.querySelector('input[name="groupOverride"]')?.closest('label');
+  const exclusion = filters?.querySelector('input[name="character_exclusion"]')?.closest('label');
+  if (!content || !group || !filters || !groupControl || !override || !exclusion) return;
+  const sources = children.find(node => node.matches('.inline-drawer.wide100p.flexFlowColumn'));
+  const details = el('details','dw2io-wi-advanced');
+  const summary = el('summary','dw2io-wi-advanced-summary','高级设置');
+  const body = el('div','dw2io-wi-advanced-body');
+  const exclusionRow = el('div','dw2io-wi-exclusion-row');
+  details.append(summary,body);
+  content.insertAdjacentElement('afterend',details);
+  const moved=[];
+  moveWorldEntryNode(group,body,moved);
+  moveWorldEntryNode(filters,body,moved);
+  moveWorldEntryNode(override,groupControl,moved);
+  body.append(exclusionRow);
+  moveWorldEntryNode(exclusion,exclusionRow,moved);
+  if (sources) moveWorldEntryNode(sources,body,moved);
+  group.classList.add('dw2io-wi-advanced-groups');
+  filters.classList.add('dw2io-wi-advanced-filters');
+  worldEntryLayouts.set(editor,{details,moved,group,filters});
+}
+function syncWorldAdvanced() {
+  if (!worldList?.isConnected) return;
+  for (const [editor, layout] of [...worldEntryLayouts]) {
+    if (!worldList.contains(editor) || !layout.details.isConnected) restoreWorldEntry(editor,layout);
+  }
+  for (const editor of worldList.querySelectorAll('.world_entry .world_entry_edit')) addWorldAdvanced(editor);
 }
 function disconnectWorldLayout() {
   if (worldFrame) cancelAnimationFrame(worldFrame);
   worldFrame = 0;
   worldObserver?.disconnect(); worldObserver = null;
-  if (worldList) {
-    for (const editor of worldList.querySelectorAll('.world_entry .world_entry_edit')) {
-      editor.querySelector(':scope > .dw2io-wi-tabs')?.remove();
-      delete editor.dataset.dw2ioTab;
-    }
-  }
+  restoreWorldEntries();
   worldRoot?.classList.remove('dw2io-world-layout');
   restoreWorldToolbar();
   worldRoot = null; worldList = null;
@@ -608,7 +631,7 @@ function syncWorldLayout() {
         )
       ));
       if (!changed || worldFrame) return;
-      worldFrame = requestAnimationFrame(() => { worldFrame = 0; syncWorldTabs(); });
+      worldFrame = requestAnimationFrame(() => { worldFrame = 0; syncWorldAdvanced(); });
     });
     worldObserver.observe(worldList, { childList: true, subtree: true });
   }
@@ -617,7 +640,7 @@ function syncWorldLayout() {
     return;
   }
   worldRoot.classList.add('dw2io-world-layout');
-  syncWorldTabs();
+  syncWorldAdvanced();
 }
 
 // ---------- Scan only native menus/settings (never observe chat messages) ----------
