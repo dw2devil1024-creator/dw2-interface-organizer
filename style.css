@@ -345,11 +345,12 @@
   color:var(--SmartThemeBodyColor,inherit);
   /* Select2 dynamically controls width as the user types. */
 }
-/* Empty selection: the search textarea is the placeholder, so give its text
-   a balanced baseline rather than pushing it toward the bottom border. */
+/* v0.1.21: optically center the empty-state placeholder in the 30px picker.
+   Only nudge the real native search input upward; no markup, sizing or
+   selected-book styling changes. */
 #WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container .select2-selection--multiple:not(:has(.select2-selection__choice)) .select2-search__field {
   position:relative;
-  top:-1px;
+  top:-5px;
 }
 /* With selected books and the dropdown CLOSED, Select2's trailing inline
    search <li> would form an extra blank line. Remove it from flow only:
