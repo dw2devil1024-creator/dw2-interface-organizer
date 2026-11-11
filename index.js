@@ -11,7 +11,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.9-beta.1';
+const VERSION = '0.1.10-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -51,7 +51,8 @@ const openParts = new Set(['menu', 'wand', 'extensions']);
 let refreshTimer = 0;
 let updateInProgress = false;
 let worldRoot = null, worldList = null, worldObserver = null, worldFrame = 0;
-let worldToolbar = null, worldTopline = null, worldOriginalTools = null;
+let worldToolbar = null, worldTopline = null, worldOriginalTools = null, worldDrawer = null;
+let worldCreateOriginalAttributes = null;
 const worldMoved = new Map();
 
 const $ = (s, base=document) => base.querySelector(s);
@@ -432,8 +433,8 @@ const WORLD_TOOL_IDS = Object.freeze([
   'world_popup_name_button', 'world_duplicate', 'world_popup_delete',
   'world_popup_new', 'OpenAllWIEntries', 'CloseAllWIEntries',
   'world_backfill_memos', 'world_apply_current_sorting', 'world_refresh',
-  'world_info_pagination',
 ]);
+const WORLD_PAGINATION_ID = 'world_info_pagination';
 function restoreWorldToolbar() {
   // The nodes are the exact TT originals, not copies. A comment at each
   // previous position restores native order even after multiple toggles.
@@ -442,6 +443,18 @@ function restoreWorldToolbar() {
     marker.remove();
   }
   worldMoved.clear();
+  if (worldCreateOriginalAttributes) {
+    const create = document.getElementById('world_create_button');
+    if (create) {
+      for (const [name, value] of Object.entries(worldCreateOriginalAttributes)) {
+        if (value === null) create.removeAttribute(name);
+        else create.setAttribute(name, value);
+      }
+    }
+    worldCreateOriginalAttributes = null;
+  }
+  worldDrawer?.classList.remove('dw2io-world-layout-host');
+  worldDrawer = null;
   worldTopline?.classList.remove('dw2io-wi-topline');
   worldOriginalTools?.classList.remove('dw2io-wi-original-tools');
   worldToolbar?.remove();
@@ -462,20 +475,21 @@ function mountWorldToolbar(root) {
   const top = select?.closest('.flex-container.alignitemscenter');
   const original = search?.closest('.flex-container.alignitemscenter');
   const nodes = WORLD_TOOL_IDS.map(id => root.querySelector('#' + id));
+  const pagination = root.querySelector('#' + WORLD_PAGINATION_ID);
   // Never partially rearrange an unknown TT version or a Select2 popup.
   if (!top || !original || top === original || !original.contains(priority)
-      || nodes.some(node => !node?.parentNode)) return false;
+      || !pagination?.parentNode || nodes.some(node => !node?.parentNode)) return false;
 
   const drawer = el('details', 'dw2io-wi-tools');
   const summary = el('summary', 'dw2io-wi-tools-summary');
   summary.append(el('span', 'dw2io-wi-tools-symbol', '☷'),
-    el('span', '', '管理工具'),
-    el('span', 'dw2io-wi-tools-hint', '展开后左右滑动'),
-    el('span', 'dw2io-wi-tools-chevron', '⌄'));
+    el('span', '', '管理工具'));
   const strip = el('div', 'dw2io-wi-tools-strip');
   strip.setAttribute('role', 'group');
-  strip.setAttribute('aria-label', '世界书原生管理按钮与分页');
-  drawer.append(summary, strip);
+  strip.setAttribute('aria-label', '世界书原生管理按钮');
+  const pages = el('div', 'dw2io-wi-tools-pages');
+  pages.setAttribute('aria-label', '世界书原生分页');
+  drawer.append(summary, strip, pages);
   root.insertBefore(drawer, original);
   top.classList.add('dw2io-wi-topline');
   original.classList.add('dw2io-wi-original-tools');
@@ -488,6 +502,25 @@ function mountWorldToolbar(root) {
   moveWorldNode(priority, top);
   // Keep ALL original native action icons and pagination, including events.
   for (const node of nodes) moveWorldNode(node, strip);
+  // The native Create action contains text; hide it visually to fit 12 icons
+  // but retain an accessible name and tooltip while the toolbar is active.
+  const create = nodes.find(node => node.id === 'world_create_button');
+  if (create) {
+    worldCreateOriginalAttributes = {
+      'title': create.getAttribute('title'),
+      'aria-label': create.getAttribute('aria-label')
+    };
+    create.setAttribute('title', '创建世界书');
+    create.setAttribute('aria-label', '创建世界书');
+  }
+  // Pagination stays native but occupies its own row, not the icons row.
+  moveWorldNode(pagination, pages);
+  worldDrawer = root.closest('#WorldInfo');
+  if (worldDrawer) {
+    worldDrawer.classList.add('dw2io-world-layout-host');
+    // Previous layout could leave this drawer scrolled horizontally.
+    worldDrawer.scrollLeft = 0;
+  }
   return true;
 }
 
@@ -789,7 +822,7 @@ function renderPanel(){
   for(const c of extensions)eb.append(checkbox('收纳 · '+c.label,state.extensionsFolded.includes(c.key),v=>{
     const next=new Set(state.extensionsFolded);v?next.add(c.key):next.delete(c.key);save({extensionsFolded:[...next]});
   }));
-  const wi=section('world','04 · 世界书 · 清透布局','跟随当前主题。紧凑搜索和排序、可折叠原生工具栏、精简条目卡片；原生编辑功能保留。');
+  const wi=section('world','04 · 世界书 · 清透布局','跟随当前主题。图标与分页分行、轻量无边框折叠、修复世界书横向滑动；原生编辑功能保留。');
   wi.append(checkbox('启用世界书新布局',state.worldLayoutEnabled,v=>save({worldLayoutEnabled:v}),
     '扩展设置页面也有一个独立开关；关闭总开关时此项一起暂停。'));
   root.append(el('p','dw2io-foot',`DW2 · Interface Organizer ${VERSION} · 私用测试版 · 不自动更新`));
