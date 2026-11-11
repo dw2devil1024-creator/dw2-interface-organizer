@@ -17,7 +17,14 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.11-beta.1**。世界书条目编辑页取消重复的三个分区按钮，正文直接可见；下方新增默认收起的「高级设置」折叠栏，原生控件和保存逻辑保留。iOS、Android 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.12-beta.1**。根据 iPhone 实机反馈，统一高级设置中两个多选框的标签和输入框对齐，把「额外匹配来源」六个勾选项改成三列两排，并缩小标题字号。原生交互保持不变，待实机复测。
+
+## v0.1.12-beta.1 · 高级设置选择框对齐及额外匹配来源紧凑化
+
+- **双多选框对齐**：绑定到角色或标签／筛选生成触发器的标签行统一高度及间距，使两个原生 Select2 多选框顶部对齐。允许用户选择多个项目后自然增高，不固定裁掉选中项。
+- **额外匹配来源**：原生六个选项保持两组不动，通过两组各三列网格形成三列两排。文字可换行，避免 iPhone 右侧溢出。
+- **标题字号**：只将「额外匹配来源」字号改为与「高级设置」同样的 12px、500 字重；其他原生标题不受影响。
+- **可逆且最小变更**：仅调整开启「世界书 · 清透布局」时的特定 CSS；不改变复选框事件、原生折叠行为、数据结构或其他模块。静态校验通过，待 iPhone 实机验收。
 
 ## v0.1.11-beta.1 · 世界书展开页简化与高级设置折叠
 
