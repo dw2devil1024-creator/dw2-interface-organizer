@@ -316,6 +316,35 @@
     max-width:100%!important;
   }
 }
+/* v0.1.18 · only the global World Info Select2, not entry Select2s.
+   TT's shared select2-overrides.css paints the inline SEARCH textarea as
+   another grey bordered box. It is both the empty placeholder bar and the
+   little square after a chosen book. Keep that real input interactive. */
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container .select2-selection--multiple {
+  box-sizing:border-box!important;
+  height:auto!important;
+  min-height:40px!important;
+  padding:5px 8px!important;
+}
+#WorldInfo.dw2io-world-layout-host #WIMultiSelector .select2-container .select2-search--inline textarea.select2-search__field {
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  outline:0!important;
+  height:26px!important;
+  min-height:26px!important;
+  max-height:26px!important;
+  line-height:26px!important;
+  margin:0!important;
+  padding:0!important;
+  vertical-align:middle!important;
+  resize:none!important;
+  color:var(--SmartThemeBodyColor,inherit);
+  /* Width is deliberately not set: Select2 updates it while typing. */
+}
+
 /* This hr separates the editor from the activation controls. */
 #world_popup.dw2io-world-layout > hr:first-child {
   display:none!important;
