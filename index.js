@@ -52,6 +52,7 @@ let refreshTimer = 0;
 let updateInProgress = false;
 let worldRoot = null, worldList = null, worldObserver = null, worldFrame = 0;
 let worldToolbar = null, worldTopline = null, worldOriginalTools = null, worldDrawer = null;
+let worldCreateOriginalAttributes = null;
 const worldMoved = new Map();
 
 const $ = (s, base=document) => base.querySelector(s);
@@ -442,6 +443,16 @@ function restoreWorldToolbar() {
     marker.remove();
   }
   worldMoved.clear();
+  if (worldCreateOriginalAttributes) {
+    const create = document.getElementById('world_create_button');
+    if (create) {
+      for (const [name, value] of Object.entries(worldCreateOriginalAttributes)) {
+        if (value === null) create.removeAttribute(name);
+        else create.setAttribute(name, value);
+      }
+    }
+    worldCreateOriginalAttributes = null;
+  }
   worldDrawer?.classList.remove('dw2io-world-layout-host');
   worldDrawer = null;
   worldTopline?.classList.remove('dw2io-wi-topline');
@@ -491,6 +502,17 @@ function mountWorldToolbar(root) {
   moveWorldNode(priority, top);
   // Keep ALL original native action icons and pagination, including events.
   for (const node of nodes) moveWorldNode(node, strip);
+  // The native Create action contains text; hide it visually to fit 12 icons
+  // but retain an accessible name and tooltip while the toolbar is active.
+  const create = nodes.find(node => node.id === 'world_create_button');
+  if (create) {
+    worldCreateOriginalAttributes = {
+      'title': create.getAttribute('title'),
+      'aria-label': create.getAttribute('aria-label')
+    };
+    create.setAttribute('title', '创建世界书');
+    create.setAttribute('aria-label', '创建世界书');
+  }
   // Pagination stays native but occupies its own row, not the icons row.
   moveWorldNode(pagination, pages);
   worldDrawer = root.closest('#WorldInfo');
