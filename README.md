@@ -17,7 +17,14 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.13-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.14-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.14-beta.1 · 正文设置勾选框微调与单行说明
+
+- **递归勾选框**：原生四项在两列两行中依次为「延迟到递归／防止进一步递归」、「不可递归／无视回复限额」。左列略宽，列间距增加，勾选文本不换行；极窄屏微调字体大小以尽量避免页面横向溢出。
+- **正文上方单行标题**：将原生最大化按钮、内容、实时词符计数、UID 和说明「这个关键词对AI的含义，逐字发送」整理为紧凑单行，字号统一，放在正文框正上方；沿用 TT 原生计数器和事件，不伪造数值。
+- **原有布局保持**：已验收的高级设置、匹配来源勾选框、选择器、世界书工具栏均不变。世界书清透布局开关依然能够恢复 TT 原生顺序。
+- **验收状态**：CSS 和 JS 已做静态检查，仍需在 iPhone 上确认超窄屏显示及原生计数更新。
 
 ## v0.1.13-beta.1 · 世界书正文设置折叠与正文标题重排
 
