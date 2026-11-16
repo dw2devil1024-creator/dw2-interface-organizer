@@ -17,7 +17,17 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.27-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.28-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.28-beta.1 · 搜索定位回归原版 ThemeEditor 的光标偏移逻辑
+
+iPhone 实机复测发现，上一版点击「区域 10」仍然跳到前一个「09-F」区块。以使用者实测准确的 SillyTavern-ThemeEditor 原生 CSS 搜索为行为参照，修复本插件的搜索定位：
+
+- **重建点击定位逻辑**：根据当前 `#customCSS` 的真实最新内容重新取得被点击的匹配行及搜索词，按原始行换行符累加计算准确字符偏移，调用 `focus()` 与 `setSelectionRange()` 选中搜索词。
+- **采用原版可靠的坐标计算方式**：临时创建与原生 CSS textarea 排版属性一致的普通隐藏 `div`，将目标光标前的文字与短标记装入，读取标记的 `offsetTop`；随后立刻移除临时节点，以 `textarea.scrollTop = offsetTop - paddingTop` 直接滚动编辑框。取消上一版额外的 Shadow DOM、`scrollIntoView()` 和多帧 `requestAnimationFrame` 校正，以免不同机制互相竞争滚动。
+- **删除多余提示行**：完整移除搜索框下方、搜索结果末尾的「按中文注释、区域名或 CSS 代码搜索；点击结果可直接跳转」「仅搜索并定位原生 CSS，不修改代码」的可见状态栏及相关废弃 CSS 样式。工具栏和搜索结果本体保持不变。
+- **范围**：只改 `theme-studio.js` 的搜索定位和界面提示，以及 CSS 工作台专属的一条废弃提示样式。未改原生 CSS 内容、世界书、主题色或其他 DW2 插件。
+- **验证**：与原版仓库 `n-nakari/SillyTavern-ThemeEditor` 的实际代码核对过处理流程，完成 JS 语法、关键词偏移及版本引用静态核验；**真正的 iPhone 2.3 滚动表现仍以实机验收为准**。
 
 ## v0.1.27-beta.1 · 修复 iPhone CSS 搜索定位偏移
 
