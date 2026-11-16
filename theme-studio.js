@@ -153,18 +153,24 @@ export function createThemeStudio({notify=()=>{}}={}){
     if(value===item.color)return;
     undo.push({theme:currentTheme(),css:existing,after:existing.slice(0,item.start)+value+existing.slice(item.end)});
     if(undo.length>12)undo.shift();
+    if(undoControl)undoControl.disabled=false;
     writeCSS(existing.slice(0,item.start)+value+existing.slice(item.end));
     message('已精确修改这一处颜色。记得保存到 TT 主题。');
   }
   function revert(){
-    const previous=undo.pop();if(!previous)return;
+    const previous=undo.pop();
+    if(!previous)return;
     if(previous.theme!==currentTheme()){
-      undo=[];message('已切换主题，不能跨主题撤销。',true);return;
+      undo=[];undoControl.disabled=true;
+      message('已切换主题，不能跨主题撤销。',true);return;
     }
     if(textarea.value!==previous.after){
-      undo=[];message('你已手动修改 CSS，为防止覆盖新内容，本次撤销已取消。',true);return;
+      undo=[];undoControl.disabled=true;
+      message('你已手动修改 CSS，为防止覆盖新内容，本次撤销已取消。',true);return;
     }
-    writeCSS(previous.css);message('已撤销上一处颜色修改。');
+    writeCSS(previous.css);
+    undoControl.disabled=!undo.length;
+    message('已撤销上一处通过工作台应用的颜色修改。');
   }
   function draw(){
     if(!expanded||!root||!textarea)return;
@@ -246,6 +252,7 @@ export function createThemeStudio({notify=()=>{}}={}){
   function themeChanged(event){
     if(event.target?.id!=='themes')return;
     undo=[];lastTheme=currentTheme();
+    if(undoControl)undoControl.disabled=true;
     clearTimeout(timer);if(expanded)timer=setTimeout(draw,180);
   }
   function mount(){
@@ -257,9 +264,29 @@ export function createThemeStudio({notify=()=>{}}={}){
     }
     textarea=t;root=el('section','root');root.id=ID;
     const bar=el('div','toolbar'),title=el('strong','title','DW2 · CSS 工作台');
-    const actions=el('div','actions'),body=el('div','body');body.hidden=true;
-    const toggle=btn('展开',()=>{expanded=!expanded;body.hidden=!expanded;toggle.textContent=expanded?'收起':'展开';draw();});
-    const height=btn('扩框',()=>{setLarge(!large);height.textContent=large?'还原高度':'扩框';});
+    const actions=el('div','actions'),body=el('div','body');
+    body.hidden=true;
+    let toggle;
+    const setExpanded=(value)=>{
+      expanded=!!value;
+      body.hidden=!expanded;
+      if(toggle){
+        const label=expanded?'收起颜色结果':'展开颜色结果';
+        toggle.title=label;
+        toggle.setAttribute('aria-label',label);
+        toggle.setAttribute('aria-expanded',String(expanded));
+        toggle.firstElementChild.className='fa-solid '+(expanded?'fa-chevron-up':'fa-chevron-down');
+      }
+      if(expanded)draw();
+    };
+    toggle=iconBtn('fa-chevron-down','展开颜色结果',()=>setExpanded(!expanded));
+    const height=iconBtn('fa-maximize','扩大 CSS 编辑框',()=>{
+      setLarge(!large);
+      const label=large?'恢复 CSS 编辑框高度':'扩大 CSS 编辑框';
+      height.title=label;
+      height.setAttribute('aria-label',label);
+      height.firstElementChild.className='fa-solid '+(large?'fa-minimize':'fa-maximize');
+    });
     const goTop=iconBtn('fa-arrow-up','CSS 代码回到顶部',()=>scrollEditor(false));
     const goBottom=iconBtn('fa-arrow-down','CSS 代码跳到底部',()=>scrollEditor(true));
     const mode=iconBtn('fa-moon','切换工作台为夜间外观',()=>{
@@ -278,12 +305,20 @@ export function createThemeStudio({notify=()=>{}}={}){
     bar.append(title,actions);
     const filters=el('div','filters');
     search=el('input','search');search.type='search';search.placeholder='搜索颜色、选择器、原始 CSS';
-    search.addEventListener('input',draw);
-    undoControl=btn('↶ 撤销',revert);undoControl.disabled=true;
+    search.setAttribute('aria-label','搜索 CSS 代码、颜色、选择器');
+    search.addEventListener('input',()=>{
+      if(!expanded && search.value.trim())setExpanded(true);
+      else draw();
+    });
+    // Undo belongs beside search, not inside the collapsible results.
+    undoControl=btn('↶ 撤销',revert,'撤销最近一次通过工作台「应用」的颜色修改（最多12次）');
+    undoControl.disabled=true;
     filters.append(search,undoControl);
     results=el('div','results');
-    hint=el('p','hint','选择颜色并点击「应用」，不会自动替换整段 CSS。');
-    body.append(filters,results,hint);root.append(bar,body);
+    hint=el('p','hint','调色后点「应用」才会修改 CSS；「撤销」仅撤回工作台已应用的颜色。记得保存主题。');
+    body.append(results,hint);
+    // Search remains available even while the color results are collapsed.
+    root.append(bar,filters,body);
     // Mount above the original CSS textarea, directly below "自定义 CSS".
     // Leave TT's heading, maximize icon, textarea, and native handlers intact.
     block.insertAdjacentElement('beforebegin',root);
