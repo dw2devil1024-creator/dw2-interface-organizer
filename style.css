@@ -1997,3 +1997,47 @@
   padding:2px!important;
   cursor:pointer!important;
 }
+
+/* =========================================================
+   DW2 · CSS Studio native editor maximize unification v0.1.33
+   The *original* TT .editor_maximize is inside Studio's actions row.
+   This icon remains TT-owned; its click behavior is NOT reimplemented.
+========================================================= */
+#dw2io-css-studio.dw2io-cs-root
+  .dw2io-cs-actions > .dw2io-cs-native-maximize.editor_maximize {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 30px!important;
+  position:static!important;
+  width:30px!important;
+  height:28px!important;
+  min-width:30px!important;
+  min-height:28px!important;
+  max-width:30px!important;
+  margin:0!important;
+  padding:3px!important;
+  border:1px solid var(--cs-line)!important;
+  border-radius:7px!important;
+  box-shadow:none!important;
+  background:var(--cs-inner)!important;
+  color:var(--cs-text)!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  vertical-align:middle!important;
+  text-align:center!important;
+  cursor:pointer!important;
+}
+#dw2io-css-studio.dw2io-cs-root
+  .dw2io-cs-actions > .dw2io-cs-native-maximize.editor_maximize::before {
+  font-size:12px!important;
+  line-height:1!important;
+}
+/* There is no reason to show an empty native CSS heading after its
+   title was replaced by our accordion and its sole button was moved. */
+#user-settings-block.dw2io-ui-layout-active
+  details#dw2io-ui-fold-css > .dw2io-ui-fold-content
+  #CustomCSS-block > h4.dw2io-cs-native-maximize-relocated {
+  display:none!important;
+}
