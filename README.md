@@ -17,7 +17,18 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.31-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.32-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.32-beta.1 · 主题颜色分隔线位置与独立自定义 CSS 折叠
+
+根据 TT 2.3 iPhone 实机反馈进行最小范围的最后两处微调：
+
+- **原生发光分隔线改到「主题颜色」上方：** TT 的 `[name="themeElements"]` 容器本来把第一个 `hr` 放在主题颜色抽屉之后。六折叠启用时仅用局部 CSS flex `order` 重新安排直接子元素的**视觉顺序**：头像与聊天样式 → 原生发光分隔线 → 原生主题颜色抽屉 → DW2 显示与界面折叠。不移动/删除原生 `hr` 或颜色选择器；关闭开关后恢复默认显示顺序。
+- **「自定义 CSS」单独折叠**：在「杂项」之后新加第六个独立折叠（默认关闭），把 TT 原生 `#CustomCSS-block` 整体移动到新的 `details` 内容区。连同原生 `#customCSS` 输入框、原生最大化按钮和 DW2 CSS 工作台一起保留，绝不并入杂项。展开后为避免标题重复，隐藏原生 h4 的文字但保留右侧可点击的原生最大化按钮。无需复制控件，也不修改主题 CSS 文本。
+- **全部可逆**：和此前五折叠使用同一份注释占位符策略，关闭独立开关时恢复原生 `#CustomCSS-block` 在 `MiscellaneousToggles` 下的原位置及 DOM 顺序，同时移除六折叠与分隔线的视觉排序样式。
+- **其他保持不变**：世界书、CSS 搜索逻辑、TT 原生主题颜色、自动滑动/自动继续/自动补全、顶部排版和此前验收的五个折叠栏均没有功能修改。
+- **设置名称**：在扩展设置和 DW2 主面板中，将「用户界面五折叠」更新为「用户界面六折叠」，沿用原独立设置开关。
+- **验证**：JS 语法、CSS 样式花括号与版本引用核对，模拟 DOM 验证 CSS 与工作台同时被正确收纳、原生分隔线始终保留、关闭后节点还原和再次开启。iPhone 上展开与位置仍需实际验收。
 
 ## v0.1.31-beta.1 · 用户界面折叠边界修正与全部箭头对齐
 
