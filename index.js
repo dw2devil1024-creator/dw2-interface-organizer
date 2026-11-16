@@ -1,6 +1,7 @@
 import { extensionTypes, openThirdPartyExtensionMenu } from '../../../extensions.js';
 import { getRequestHeaders } from '../../../../script.js';
-import { createThemeStudio } from './theme-studio.js?v=0.1.28-beta.1';
+import { createThemeStudio } from './theme-studio.js?v=0.1.29-beta.1';
+import { createUserUILayout } from './user-ui-layout.js?v=0.1.29-beta.1';
 /* DW2 · Interface Organizer | Private-use beta
  * Owns only three surfaces: native hamburger menu, magic-wand entries, and
  * the outer layout of the native Extensions settings drawer.
@@ -12,7 +13,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.28-beta.1';
+const VERSION = '0.1.29-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -34,6 +35,7 @@ const DEFAULTS = Object.freeze({
   foldExtras: true,
   worldLayoutEnabled: false,
   themeStudioEnabled: false,
+  userLayoutEnabled: false,
 });
 const allowedKeys = Object.keys(DEFAULTS);
 let active = false, state = null, retries = 0, busy = false;
@@ -56,6 +58,7 @@ let worldRoot = null, worldList = null, worldObserver = null, worldFrame = 0;
 let worldToolbar = null, worldTopline = null, worldOriginalTools = null, worldDrawer = null;
 let worldCreateOriginalAttributes = null;
 let themeStudio = null;
+let userUILayout = null;
 const worldMoved = new Map();
 
 const $ = (s, base=document) => base.querySelector(s);
@@ -745,6 +748,8 @@ function scan() {
     syncWorldLayout();
     if(!themeStudio)themeStudio=createThemeStudio({notify});
     themeStudio.sync(!!(state.enabled && state.themeStudioEnabled));
+    if(!userUILayout)userUILayout=createUserUILayout();
+    userUILayout.sync(!!(state.enabled && state.userLayoutEnabled));
     for(const observer of observed.values())observer.takeRecords();
   } catch(error) {
     console.error('[DW2 Interface Organizer] scan failed',error);
@@ -807,6 +812,9 @@ function attachAccessPoints() {
     const cssCheckbox=byId('dw2io-theme-studio-toggle');
     if(cssCheckbox && cssCheckbox.checked!==state.themeStudioEnabled)
       cssCheckbox.checked=state.themeStudioEnabled;
+    const userCheckbox=byId('dw2io-user-layout-toggle');
+    if(userCheckbox && userCheckbox.checked!==state.userLayoutEnabled)
+      userCheckbox.checked=state.userLayoutEnabled;
     return;
   }
   settingsEntry=el('div','extension_container dw2io-settings');
@@ -820,7 +828,7 @@ function attachAccessPoints() {
   header.append(heading,arrow);
   const body=el('div','inline-drawer-content dw2io-settings-content');
   body.hidden=true;
-  body.append(el('p','dw2io-settings-version','三横菜单 · 魔法棒 · 扩展设置 · 世界书 · CSS  |  v'+VERSION));
+  body.append(el('p','dw2io-settings-version','三横菜单 · 魔法棒 · 扩展设置 · 世界书 · CSS · 用户界面  |  v'+VERSION));
   const toggleRow=el('label','dw2io-native-switch');
   const checkbox=el('input');checkbox.type='checkbox';checkbox.id='dw2io-enabled-toggle';
   checkbox.checked=state.enabled;
@@ -862,8 +870,19 @@ function attachAccessPoints() {
   cssTrack.append(el('span','dw2io-switch-thumb'));
   cssRow.append(cssCheckbox,cssTrack,
     el('span','dw2io-switch-copy','美化 · CSS 工作台（默认关闭）'));
-  body.append(toggleRow,worldRow,cssRow,actions,el('div','dw2io-settings-caption',
-    '三横菜单、魔法棒、扩展设置、世界书布局与 CSS 工作台各自控制；原生数据与保存逻辑不变。'));
+  const userRow=el('label','dw2io-native-switch dw2io-user-layout-settings-switch');
+  const userCheckbox=el('input');
+  userCheckbox.type='checkbox';userCheckbox.id='dw2io-user-layout-toggle';
+  userCheckbox.checked=state.userLayoutEnabled;
+  userCheckbox.setAttribute('role','switch');
+  userCheckbox.addEventListener('change',()=>save({userLayoutEnabled:userCheckbox.checked}));
+  const userTrack=el('span','dw2io-switch-track');
+  userTrack.setAttribute('aria-hidden','true');
+  userTrack.append(el('span','dw2io-switch-thumb'));
+  userRow.append(userCheckbox,userTrack,
+    el('span','dw2io-switch-copy','用户界面 · 五折叠（关闭恢复原版）'));
+  body.append(toggleRow,worldRow,cssRow,userRow,actions,el('div','dw2io-settings-caption',
+    '三横菜单、魔法棒、扩展设置、世界书布局、CSS 工作台与用户界面五折叠独立控制；原生数据与保存逻辑不变。'));
   drawer.append(header,body);settingsEntry.append(drawer);root.append(settingsEntry);
   let expanded=false;
   const expand=(e)=>{
@@ -901,7 +920,7 @@ function renderPanel(){
   root.append(checkbox('启用界面整理',state.enabled,v=>save({enabled:v})));
   const actions=el('div','dw2io-actions');
   actions.append(button('重新识别',()=>{scan();renderPanel();notify('已重新扫描入口');}),button('恢复原界面',()=>{
-    save({enabled:false,menuFolded:[],wandHidden:[],wandExpanded:false,extensionsFolded:[],extensionsExpanded:false,foldExtras:false,worldLayoutEnabled:false,themeStudioEnabled:false});
+    save({enabled:false,menuFolded:[],wandHidden:[],wandExpanded:false,extensionsFolded:[],extensionsExpanded:false,foldExtras:false,worldLayoutEnabled:false,themeStudioEnabled:false,userLayoutEnabled:false});
     notify('已关闭整理并恢复所有入口');
   },'dw2io-quiet'));root.append(actions);
   const section=(key,title,desc)=>{
@@ -942,7 +961,10 @@ function renderPanel(){
     '扩展设置页面也有一个独立开关；关闭总开关时此项一起暂停。'));
   const cs=section('css','05 · CSS 工作台','只保留常用 CSS 注释／代码搜索定位与编辑辅助工具；不再显示颜色卡片，不修改原生主题数据。');
   cs.append(checkbox('启用 CSS 工作台',state.themeStudioEnabled,v=>save({themeStudioEnabled:v}),
-    '默认关闭。需先停用旧的 ThemeEditor；工具栏出现在 TT「自定义 CSS」输入框下面。'));
+    '默认关闭。需先停用旧的 ThemeEditor；工具栏出现在 TT「自定义 CSS」输入框上面。'));
+  const ui=section('ui','06 · 用户界面 · 五折叠','把显示选项、角色处理、杂项、聊天／消息处理与 STscript 设为可还原的默认收起折叠栏。');
+  ui.append(checkbox('启用用户界面五折叠',state.userLayoutEnabled,v=>save({userLayoutEnabled:v}),
+    'UI 主题、原生主题颜色、自定义 CSS 不动；搜索设置时自动展开，关闭开关恢复原始结构。'));
   root.append(el('p','dw2io-foot',`DW2 · Interface Organizer ${VERSION} · 私用测试版 · 不自动更新`));
   root.scrollTop=pos;
 }
@@ -969,6 +991,7 @@ export function onDisable(){
   clearTimeout(refreshTimer);refreshTimer=0;
   closePanel();restoreMenu();clearWand();resetExtensionLayout();disconnectWorldLayout();
   themeStudio?.disable();themeStudio=null;
+  userUILayout?.disable();userUILayout=null;
   settingsEntry?.remove();settingsEntry=null;byId('dw2io-menu-entry')?.remove();
   for(const observer of observed.values()) observer.disconnect();observed.clear();
   for(const fn of cleanup.splice(0))fn();
