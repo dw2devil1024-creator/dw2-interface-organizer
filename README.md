@@ -17,7 +17,16 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.22-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.23-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.23-beta.1 · CSS 工作台工具栏位置与按钮细节
+
+根据 iPhone 实机截图，专门修改新 CSS 工作台，原来的世界书清透布局及其他功能均未更动。
+
+- **工具栏位置：** 从原生 `#customCSS` 文本框下方改为**上方**，紧挨「自定义 CSS」标题；仍使用真实 TT textarea，不克隆、不移动原生文本框。
+- **日间／夜间：** 原「浅/深」改为单个**月亮／太阳图标**，按一次换夜间工作台外观，再按一次换日间工作台外观。只改变工作台面板外观，不切换 TT 全站主题；图标有辅助名称和提示。
+- **顶部／底部：** 删除容易误解的「首尾」双态按钮，改为两个明确的**↑ 回顶部、↓ 去底部**按钮，仅滚动原生 CSS 代码框。避免调用 `focus()` 触发 iOS 重新定位到旧光标或弹出键盘；先设置文本光标位置，再滚动，下一帧再次确保正确位置。
+- **兼容：** CSS 仅为工作台图标增加局部样式，保留保存、另存、刷新、扩框、展开与颜色编辑、搜索等功能。JavaScript 语法和版本引用已静态核验，实际交互待 iPhone 2.3 测试。
 
 ## v0.1.22-beta.1 · 新增「DW2 · CSS 工作台」（独立开关，默认关闭）
 
