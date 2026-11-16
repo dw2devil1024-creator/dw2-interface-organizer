@@ -17,7 +17,23 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.28-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.29-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.29-beta.1 · 用户界面五折叠（独立开关、可还原）
+
+按 TT 2.3 iPhone 用户界面页面的五组原生设置结构，新增轻量、默认收起的五个折叠栏：
+
+1. **显示与界面选项**：页面宽度、字体比例、模糊强度、文本阴影宽度四个原生滑块，以及其下方 `themeToggles` 的所有勾选框。
+2. **角色处理**：原生 `CharacterHandlingToggles` 容器整体折叠，保留两个下拉框及下面的全部勾选框。
+3. **杂项**：原生 `MiscellaneousToggles` 容器整体折叠，包括刷新聊天／调试菜单／清理按钮及后续全部勾选框、移动 UI 选择器。
+4. **聊天／消息处理**：原生 `ChatMessageHandlingToggles` 容器整体折叠，包括原生滑块、下拉菜单、勾选项，以及原本存在的「自动滑动」「自动继续」「自动补全设置」等内层折叠。
+5. **STscript 设置**：原生 `STscriptToggles` 容器整体折叠，保留解析器标志相关勾选框与辅助链接。
+
+**没有改动**：顶部语言／UI 主题选择、原生「主题颜色」折叠、自定义 CSS 及 DW2 CSS 工作台、世界书布局、扩展设置页、其他 DW2 插件。
+
+**技术保护**：独立模块 `user-ui-layout.js` 使用原生 `details/summary`。只移动原有 DOM 节点，不复制或改写选项，使用注释占位符记录每个控件的原位置。禁用时恢复原结构和原始绑定；外框透明、仅标题下方细线、轻量箭头。用户设置页 `#settingsSearch` 搜索有内容时自动展开五折叠，清空后恢复搜索前的折叠状态。默认关闭，仅通过扩展设置「用户界面 · 五折叠」或主面板独立开关启用，关闭总开关时一并暂停。
+
+已核对 SillyTavern 原生 index.html 的 `FontBlurChatWidthBlock`、`themeToggles`、`CharacterHandlingToggles`、`MiscellaneousToggles`、`ChatMessageHandlingToggles`、`STscriptToggles` 六个准确容器名。JavaScript 和 CSS 进行静态检查；iPhone TT 2.3 实机展开／回退和原生设置交互仍需验收。
 
 ## v0.1.28-beta.1 · 搜索定位回归原版 ThemeEditor 的光标偏移逻辑
 
