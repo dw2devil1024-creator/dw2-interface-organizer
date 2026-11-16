@@ -55,9 +55,13 @@ export function createUserUILayout(){
     if(!root)return;
     root.classList.add('dw2io-ui-layout-active');
     decoratedRoot=root;
+    // These are separate native inline-drawers, not children of a single
+    // ChatMessageHandling container. All native controls remain untouched.
     const labels=[
       '#UI-Theme-Block [name="themeElements"] .inline-drawer-toggle [data-i18n="Theme Colors"]',
-      '[name="ChatMessageHandlingToggles"] .inline-drawer-toggle [data-i18n="AutoComplete Settings"]'
+      '[name="ChatMessageHandlingToggles"] .inline-drawer-toggle [data-i18n="Auto-swipe"]',
+      '[name="ChatMessageHandlingToggles"] .inline-drawer-toggle [data-i18n="Auto-Continue"]',
+      '[name="AutoCompleteToggle"] .inline-drawer-toggle [data-i18n="AutoComplete Settings"]'
     ];
     for(const selector of labels){
       const header=root.querySelector(selector)?.closest('.inline-drawer-toggle');
@@ -82,6 +86,38 @@ export function createUserUILayout(){
   const findTargets=(config)=>{
     const root=document.querySelector(config.parent);
     if(!root)return null;
+
+    // TauriTavern nests #CustomCSS-block inside MiscellaneousToggles.
+    // Keep that entire native block (and our CSS toolbar mounted inside it)
+    // OUTSIDE the Misc fold. The original Misc container stays in place.
+    if(config.key==='misc'){
+      const misc=root.querySelector('[name="MiscellaneousToggles"]');
+      const css=misc?.querySelector('#CustomCSS-block');
+      if(!misc||!css||css.parentElement!==misc)return null;
+      const direct=Array.from(misc.children);
+      const index=direct.indexOf(css);
+      if(index<2||direct[0].tagName!=='H4')return null;
+      return direct.slice(0,index);
+    }
+
+    // TT also nests the native Auto-swipe and Auto-Continue drawers inside
+    // ChatMessageHandlingToggles. Leave both as visible native siblings
+    // *after* our fold, with their own intact inline-drawer behavior.
+    if(config.key==='chat'){
+      const chat=root.querySelector('[name="ChatMessageHandlingToggles"]');
+      if(!chat)return null;
+      const direct=Array.from(chat.children);
+      const firstDrawer=direct.find(child=>child.classList.contains('inline-drawer') &&
+        child.querySelector('.inline-drawer-toggle [data-i18n="Auto-swipe"]'));
+      const boundary=direct.indexOf(firstDrawer);
+      if(boundary<2||direct[0].tagName!=='H4')return null;
+      const continueDrawer=direct.slice(boundary+1).find(child=>
+        child.classList.contains('inline-drawer') &&
+        child.querySelector('.inline-drawer-toggle [data-i18n="Auto-Continue"]'));
+      if(!continueDrawer)return null; // Unknown layout: avoid swallowing drawers.
+      return direct.slice(0,boundary);
+    }
+
     const nodes=config.members.map(selector=>root.querySelector(selector));
     if(nodes.some(node=>!node||node.parentElement!==nodes[0].parentElement))return null;
     if(config.includeDivider){
