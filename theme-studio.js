@@ -87,6 +87,16 @@ function el(tag,cls='',text) {
 function btn(text,fn,title='') {
   const node=el('button','btn',text);node.type='button';node.title=title||text;node.addEventListener('click',fn);return node;
 }
+function iconBtn(iconName,label,fn) {
+  const node=btn('',fn,label);
+  node.classList.add('dw2io-cs-icon-btn');
+  node.setAttribute('aria-label',label);
+  const icon=document.createElement('i');
+  icon.className='fa-solid '+iconName;
+  icon.setAttribute('aria-hidden','true');
+  node.append(icon);
+  return node;
+}
 function hexColor(v){
   const ctx=document.createElement('canvas').getContext('2d');if(!ctx)return null;
   ctx.fillStyle='#000000';ctx.fillStyle=v;
@@ -220,6 +230,18 @@ export function createThemeStudio({notify=()=>{}}={}){
       originalHeight=null;
     }
   }
+  // A deterministic top/bottom action for iOS textareas. Do not focus the
+  // textarea here: focusing can re-scroll to the old caret and summon the
+  // on-screen keyboard, making "go to top" appear broken.
+  function scrollEditor(toBottom){
+    if(!textarea)return;
+    const target=textarea;
+    const position=toBottom?target.value.length:0;
+    try{target.setSelectionRange(position,position);}catch{}
+    const scroll=()=>{if(target.isConnected)target.scrollTop=toBottom?target.scrollHeight:0;};
+    scroll();
+    requestAnimationFrame(scroll);
+  }
   function inputChanged(){clearTimeout(timer);if(expanded)timer=setTimeout(draw,240);}
   function themeChanged(event){
     if(event.target?.id!=='themes')return;
@@ -238,10 +260,20 @@ export function createThemeStudio({notify=()=>{}}={}){
     const actions=el('div','actions'),body=el('div','body');body.hidden=true;
     const toggle=btn('展开',()=>{expanded=!expanded;body.hidden=!expanded;toggle.textContent=expanded?'收起':'展开';draw();});
     const height=btn('扩框',()=>{setLarge(!large);height.textContent=large?'还原高度':'扩框';});
+    const goTop=iconBtn('fa-arrow-up','CSS 代码回到顶部',()=>scrollEditor(false));
+    const goBottom=iconBtn('fa-arrow-down','CSS 代码跳到底部',()=>scrollEditor(true));
+    const mode=iconBtn('fa-moon','切换工作台为夜间外观',()=>{
+      dark=!dark;
+      root.dataset.mode=dark?'dark':'light';
+      const newLabel=dark?'切换工作台为日间外观':'切换工作台为夜间外观';
+      mode.title=newLabel;
+      mode.setAttribute('aria-label',newLabel);
+      mode.firstElementChild.className='fa-solid '+(dark?'fa-sun':'fa-moon');
+    });
     actions.append(
       btn('保存',()=>save()),btn('另存',()=>save(true)),
-      btn('刷新',draw),btn('首尾',()=>{textarea.scrollTop=textarea.scrollTop<textarea.scrollHeight/3?textarea.scrollHeight:0;textarea.focus();}),
-      height,btn('浅/深',()=>{dark=!dark;root.dataset.mode=dark?'dark':'light';}),toggle
+      btn('刷新',draw),goTop,goBottom,
+      height,mode,toggle
     );
     bar.append(title,actions);
     const filters=el('div','filters');
@@ -252,7 +284,9 @@ export function createThemeStudio({notify=()=>{}}={}){
     results=el('div','results');
     hint=el('p','hint','选择颜色并点击「应用」，不会自动替换整段 CSS。');
     body.append(filters,results,hint);root.append(bar,body);
-    block.insertAdjacentElement('afterend',root);
+    // Mount above the original CSS textarea, directly below "自定义 CSS".
+    // Leave TT's heading, maximize icon, textarea, and native handlers intact.
+    block.insertAdjacentElement('beforebegin',root);
     lastTheme=currentTheme();
     textarea.addEventListener('input',inputChanged);
     document.addEventListener('change',themeChanged);
