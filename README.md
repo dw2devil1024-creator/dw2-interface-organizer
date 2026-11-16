@@ -17,7 +17,18 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.23-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.24-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.24-beta.1 · CSS 工作台图标化、常驻搜索与颜色卡片高度修复
+
+根据 iPhone TT 2.3 实机截图与反馈修复，**不修改世界书、预设控制台与其他 DW2 插件**：
+
+- **扩框**：把文字「扩框／还原高度」换为最大化／还原图标，带名称提示；继续操作原生 `#customCSS` 输入框高度，不改其内容。
+- **展开**：换为简洁的下／上箭头图标，默认折叠的是颜色结果区，不再折叠搜索框。
+- **搜索框永远可见**：移到 CSS 工作台内的工具栏正下方，无须先展开。输入关键词时自动展开结果；同时支持筛选颜色卡片和定位原始 CSS。
+- **撤销按钮永远可见**：紧靠搜索框，未通过工作台「应用」修改颜色时呈禁用状态；只撤销最近的工作台颜色替换，不影响手动输入、其他插件和 TT 设置。最多保存 12 次撤销记录，检测到另有手动代码修改时不强行覆盖；主题切换后清空。
+- **修复竖屏颜色卡片的巨大空白**：此前选择器标签使用 `flex-basis:150px`，移动端纵向布局将其当作高度。现更改为内容驱动，不强制撑高，颜色、属性、按钮可紧凑排列。
+- 继续保留保存／另存／刷新／↑↓ 代码滚动／太阳月亮切换及原生主题保存机制。静态代码与 CSS 检查通过，待 iPhone 上测试输入搜索、展开收起、撤销和卡片紧凑效果。
 
 ## v0.1.23-beta.1 · CSS 工作台工具栏位置与按钮细节
 
