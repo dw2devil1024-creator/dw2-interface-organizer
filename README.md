@@ -17,7 +17,17 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.33-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.34-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.34-beta.1 · 用户界面全部折叠间距统一、移除标题下划线
+
+按 TT 2.3 iPhone 实机反馈仅调整 **用户界面六折叠与原生四折叠** 的外层视觉样式，不移动原生 DOM、不修改设置数据：
+
+- **统一外层间距**：六个 DW2 `details` 与「主题颜色」「自动滑动」「自动继续」「自动补全设置」四个 TT 原生 `inline-drawer` 容器均采用 `margin-bottom:8px`，并归零标题自身多余的外边距；标题统一最小高度 46px、上下内边距 10px、左右内边距 11px。解决不同组件原生边距叠加造成的忽大忽小。
+- **移除每个抽屉下面的横线**：仅取消这些外层标题的 `border-bottom`／原生边框及发光背景，不触碰其他弹窗、滑块或展开后内层子设置。
+- **保留之前用户指定的主题颜色上方发光分隔线**：它是独立的原生 `hr`，与这次移除的「每个抽屉下面的线」不同，因此不删。
+- **完全可逆**：新规则全部限定在 `#user-settings-block.dw2io-ui-layout-active` 及 DW2 自身折叠节点；关闭「用户界面 · 六折叠」后恢复原生样式。按钮图标大小、六折叠内容、原生颜色编辑、CSS 工作台、世界书和其它插件无变更。
+- **验证**：静态检查 CSS 无括号异常，版本号及模块缓存引用一致；原生控件展开和整体视觉仍需 iPhone 实机验收。
 
 ## v0.1.33-beta.1 · 原生 CSS 最大化按钮合并至 DW2 工作台按钮行
 
