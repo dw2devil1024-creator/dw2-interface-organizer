@@ -1547,7 +1547,7 @@
   min-width:0!important;
   max-width:100%!important;
   box-sizing:border-box!important;
-  margin:3px 0 5px!important;
+  margin:0 0 8px!important;
   padding:0!important;
   background:transparent!important;
   border:0!important;
@@ -1564,7 +1564,7 @@
   padding:9px 11px!important;
   margin:0!important;
   border:0!important;
-  border-bottom:1px solid var(--SmartThemeBorderColor,rgba(150,150,150,.2))!important;
+  border-bottom:0!important;
   background:transparent!important;
   color:var(--SmartThemeBodyColor,inherit)!important;
   font-size:13px!important;
@@ -1868,15 +1868,15 @@
   display:flex!important;
   align-items:center!important;
   justify-content:space-between!important;
-  min-height:42px!important;
+  min-height:46px!important;
   width:100%!important;
   min-width:0!important;
   max-width:100%!important;
   box-sizing:border-box!important;
-  padding:9px 11px!important;
-  margin:3px 0 5px!important;
+  padding:10px 11px!important;
+  margin:0!important;
   border:0!important;
-  border-bottom:1px solid var(--SmartThemeBorderColor,rgba(150,150,150,.2))!important;
+  border-bottom:0!important;
   border-radius:0!important;
   box-shadow:none!important;
   background:transparent!important;
@@ -1896,6 +1896,34 @@
   font-size:13px!important;
   line-height:1.55!important;
 }
+/* Normalize the four native outer drawer containers to the exact same
+   8px spacing as DW2's six <details>, without affecting any inner content.
+   Keep the separate glow HR above Theme Colors intact. */
+#user-settings-block.dw2io-ui-layout-active
+  #UI-Theme-Block [name="themeElements"] > .inline-drawer,
+#user-settings-block.dw2io-ui-layout-active
+  [name="ChatMessageHandlingToggles"] > .inline-drawer,
+#user-settings-block.dw2io-ui-layout-active
+  [name="AutoCompleteToggle"].inline-drawer {
+  margin:0 0 8px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+
+/* Remove any native userSettingsInnerExpandable divider or glow on the
+   OUTER native headers only. Their inner controls and events stay native. */
+#user-settings-block.dw2io-ui-layout-active
+  .dw2io-ui-native-chevron.inline-drawer-toggle.inline-drawer-header {
+  border:0!important;
+  border-bottom:0!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+
 /* Same fixed-size slot and exact chevron glyph for both kinds of headers. */
 #user-settings-block.dw2io-ui-layout-active
   details.dw2io-ui-fold > summary.dw2io-ui-fold-summary > .dw2io-ui-fold-arrow,
