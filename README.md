@@ -17,7 +17,16 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.26-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.27-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.27-beta.1 · 修复 iPhone CSS 搜索定位偏移
+
+根据 iPhone 用户实测：输入「背景」找到三个匹配结果，点击第 2604 行的第三条，原生 CSS 编辑框却跳到看不到「背景」的位置。根因是原有定位按原始行数乘行高估算像素偏移；但 CSS 长行在手机上自动换行，一个原始行会占据数行可见高度，越往后偏差越大。
+
+- 改为 **按真实自动换行后的排版位置定位**：点击结果时临时创建只读的 Shadow DOM 测量节点，拷贝当前原生 `#customCSS` 文本框字号、行高、左右内边距、字距、宽度等参数，并测量匹配文本的实际竖向坐标，随后立即移除测量节点。不修改代码，也不永久增加隐藏元素。
+- **选中目标关键词**：点击搜索结果会聚焦原生 CSS 编辑框，选中匹配文字，并调整编辑框内部滚动位置，尽量将其显示在可见区域靠上的位置。取消此前可能引起定位竞争的平滑整框滚动。iOS 上两帧内再次校正内部滚动，减少 WebKit 光标移动后的跳动。
+- 搜索结果、中文注释搜索、保存／另存、首尾跳转、扩框、三种外观、默认独立开关全部保持原状。世界书与其他功能没有代码改动。
+- 已用浏览器移动视口中超过 2600 行、包含自动换行的 CSS 进行算法模拟，验证可以选中「背景」并将它滚动至对应区域；仍需在 TT 2.3 iPhone 设备实测。
 
 ## v0.1.26-beta.1 · CSS 工作台极简化：去掉颜色编辑，仅保留搜索定位与工具
 
