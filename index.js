@@ -1,6 +1,6 @@
 import { extensionTypes, openThirdPartyExtensionMenu } from '../../../extensions.js';
 import { getRequestHeaders } from '../../../../script.js';
-import { createThemeStudio } from './theme-studio.js?v=0.1.25-beta.1';
+import { createThemeStudio } from './theme-studio.js?v=0.1.26-beta.1';
 /* DW2 · Interface Organizer | Private-use beta
  * Owns only three surfaces: native hamburger menu, magic-wand entries, and
  * the outer layout of the native Extensions settings drawer.
@@ -12,7 +12,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.25-beta.1';
+const VERSION = '0.1.26-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -940,7 +940,7 @@ function renderPanel(){
   const wi=section('world','04 · 世界书 · 清透布局','跟随当前主题。图标与分页分行、轻量无边框折叠、修复世界书横向滑动；原生编辑功能保留。');
   wi.append(checkbox('启用世界书新布局',state.worldLayoutEnabled,v=>save({worldLayoutEnabled:v}),
     '扩展设置页面也有一个独立开关；关闭总开关时此项一起暂停。'));
-  const cs=section('css','05 · CSS 工作台','只增强 TT 自带的自定义 CSS 输入框，精确编辑颜色、搜索与撤销，不替换主题数据。');
+  const cs=section('css','05 · CSS 工作台','只保留常用 CSS 注释／代码搜索定位与编辑辅助工具；不再显示颜色卡片，不修改原生主题数据。');
   cs.append(checkbox('启用 CSS 工作台',state.themeStudioEnabled,v=>save({themeStudioEnabled:v}),
     '默认关闭。需先停用旧的 ThemeEditor；工具栏出现在 TT「自定义 CSS」输入框下面。'));
   root.append(el('p','dw2io-foot',`DW2 · Interface Organizer ${VERSION} · 私用测试版 · 不自动更新`));
