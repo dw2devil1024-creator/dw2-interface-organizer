@@ -17,7 +17,18 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.24-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.25-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.25-beta.1 · CSS 工作台自动跟随主题与中文用途说明
+
+根据 iPhone 2.3 上的真实截图，针对两个易用性需求精修 **CSS 工作台**，不动世界书／预设／资源库布局。
+
+- **新增第三套外观「跟随 TT 主题」**：默认采用原生 `--SmartThemeBlurTintColor`、`--SmartThemeBorderColor`、`--SmartThemeBodyColor` 等变量，TT 主题换色时工作台会自动跟着变。保留已有明确的夜间、日间覆盖样式。工具栏保留单个图标，点击按「跟随主题 → 夜间 → 日间 → 跟随主题」循环：半圆图标（跟随）、月亮（夜间）、太阳（日间）。切换只影响 CSS 工作台，不影响 TT 本体。
+- **可读的中文颜色卡片**：不再把所有 `:root`、`--theme-main` 等技术名称放在卡片主标题。现在优先显示「主题主色」「页面／纸张底色」「卡片背景色」「用户卡片背景」「面板背景色」「文字颜色」「边框颜色」等中文用途名称，下方保留原始变量／选择器／行号以便核查。
+- **保守解释，防止误导**：变量名称推导的用途会清楚标明为「推测」；同一变量可能被多个地方引用。遇到无法判断的变量统一显示「自定义颜色变量」并提醒用「定位」查看上下文，不凭空编造它所控制的组件。
+- **渐变解释**：同一个 CSS 属性里有多个颜色时显示「第 1 色／第 2 色」等，中文名和简单说明也可以作为搜索关键词。
+- **透明色优化**：原值为 `transparent` 时，主动选择可见新颜色不会强行继承原本完全透明的 alpha=0；其它 RGBA 取色仍尽量保留原来的透明度。
+- 颜色输入、明确点击「应用」、最多 12 次受保护撤销、原生保存／另存、常驻搜索和布局回退逻辑均保留。JavaScript 语法与颜色解析样例通过，视觉与实际变更请继续用 iPhone 验收。
 
 ## v0.1.24-beta.1 · CSS 工作台图标化、常驻搜索与颜色卡片高度修复
 
