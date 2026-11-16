@@ -1842,3 +1842,103 @@
     column-gap:8px!important;
   }
 }
+
+/* =========================================================
+   DW2 · User UI accordion alignment v0.1.31
+   All outer native accordion headers and our five summaries use a
+   matching 20px chevron slot, same right padding and baseline.
+   Excludes TT's unrelated inner drawers and CSS editor.
+========================================================= */
+/* In this TT release the miscellaneous / chat outer containers include
+   unrelated elements. The two new internal folds must hide their
+   own original H4, while leaving Custom CSS and Auto drawers visible. */
+#user-settings-block.dw2io-ui-layout-active
+  details.dw2io-ui-fold[data-dw2io-ui-fold="misc"]
+  > .dw2io-ui-fold-content > h4:first-child,
+#user-settings-block.dw2io-ui-layout-active
+  details.dw2io-ui-fold[data-dw2io-ui-fold="chat"]
+  > .dw2io-ui-fold-content > h4:first-child {
+  display:none!important;
+}
+
+#user-settings-block.dw2io-ui-layout-active
+  details.dw2io-ui-fold > summary.dw2io-ui-fold-summary,
+#user-settings-block.dw2io-ui-layout-active
+  .dw2io-ui-native-chevron.inline-drawer-toggle.inline-drawer-header {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  min-height:42px!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  padding:9px 11px!important;
+  margin:3px 0 5px!important;
+  border:0!important;
+  border-bottom:1px solid var(--SmartThemeBorderColor,rgba(150,150,150,.2))!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  background-image:none!important;
+  color:var(--SmartThemeBodyColor,inherit)!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  line-height:1.55!important;
+  text-align:left!important;
+}
+#user-settings-block.dw2io-ui-layout-active
+  .dw2io-ui-native-chevron.inline-drawer-toggle.inline-drawer-header > b {
+  display:block!important;
+  min-width:0!important;
+  margin:0!important;
+  font-weight:600!important;
+  font-size:13px!important;
+  line-height:1.55!important;
+}
+/* Same fixed-size slot and exact chevron glyph for both kinds of headers. */
+#user-settings-block.dw2io-ui-layout-active
+  details.dw2io-ui-fold > summary.dw2io-ui-fold-summary > .dw2io-ui-fold-arrow,
+#user-settings-block.dw2io-ui-layout-active
+  .dw2io-ui-native-chevron.inline-drawer-toggle > .inline-drawer-icon {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  position:static!important;
+  flex:0 0 20px!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  max-width:20px!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:11px!important;
+  line-height:1!important;
+  color:inherit!important;
+  opacity:.67!important;
+  background:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+  transform-origin:center center!important;
+}
+#user-settings-block.dw2io-ui-layout-active
+  .dw2io-ui-native-chevron.inline-drawer-toggle > .inline-drawer-icon::before {
+  content:"\f078"!important;
+  font-family:"Font Awesome 6 Free"!important;
+  font-weight:900!important;
+  display:block!important;
+  font-size:11px!important;
+  line-height:1!important;
+}
+/* TT marks the collapsed original drawer icon as .down. */
+#user-settings-block.dw2io-ui-layout-active
+  .dw2io-ui-native-chevron.inline-drawer-toggle > .inline-drawer-icon.down {
+  transform:rotate(0deg)!important;
+}
+#user-settings-block.dw2io-ui-layout-active
+  .dw2io-ui-native-chevron.inline-drawer-toggle > .inline-drawer-icon:not(.down) {
+  transform:rotate(180deg)!important;
+}
