@@ -1432,3 +1432,23 @@
   #dw2io-css-studio .dw2io-cs-btn{font-size:10px!important;padding:4px 6px!important;min-height:27px!important;}
   #dw2io-css-studio .dw2io-cs-meta{flex-direction:column!important;align-items:flex-start!important;}
 }
+
+/* v0.1.23 · Icon-only navigation and appearance controls.
+   Keep the buttons tactile on iPhone, without changing TT native controls. */
+#dw2io-css-studio .dw2io-cs-icon-btn {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 30px!important;
+  width:30px!important;
+  height:28px!important;
+  min-width:30px!important;
+  padding:3px!important;
+}
+#dw2io-css-studio .dw2io-cs-icon-btn i {
+  display:inline-block!important;
+  color:inherit!important;
+  font-size:12px!important;
+  line-height:1!important;
+  pointer-events:none!important;
+}
