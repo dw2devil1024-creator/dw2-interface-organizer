@@ -17,7 +17,19 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.21-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.22-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.22-beta.1 · 新增「DW2 · CSS 工作台」（独立开关，默认关闭）
+
+**目标：** 接管旧 ThemeEditor 的实用编辑体验，但不复制其代码与数据机制；只扩展 TT 原生 `#customCSS` 文本框，保留 TT 原生主题管理与保存行为。
+
+- **入口：** 扩展设置 → DW2 · Interface Organizer → 「美化 · CSS 工作台（默认关闭）」；也可在「打开界面整理」里开关。启用后在 TT「自定义 CSS」框下方挂载可折叠的工具栏。关闭时完整移除工作台、还原临时扩框样式，不变更自定义 CSS 内容。
+- **可视化颜色编辑：** 原创括号/字符串/注释感知的 CSS 扫描，支持普通色值、RGB、HSL、透明色与渐变中各个颜色，按选择器／属性／行号显示卡片；避免错误识别 URL 内的字符串。使用原生颜色控件选色，文本框可手输任意 CSS 合法颜色。**点击「应用」后，验证原始位置与值，再仅替换这一处颜色；不做全局正则替换**。保留原色透明度供原生取色器调色。提供最近 12 次工作台颜色修改的撤销，切换主题后清空撤销栈，防止串主题。
+- **搜索定位：** 在颜色卡片中按选择器／属性／颜色筛选，同时显示最多 30 条原始 CSS 代码匹配；点击定位到 TT 原生文本框的行号与选中片段。
+- **编辑工具：** 原生主题「保存」「另存」、刷新、原始 CSS 首尾滚动、60dvh 扩框/恢复、工作台局部深浅色切换、展开/折叠。
+- **保护：** 版本初始关闭；与旧 ThemeEditor 同时存在时工作台不重复插入。原生 `#customCSS` 不被克隆替换，原生按钮的监听与数据结构保留；所有界面样式限定 `#dw2io-css-studio`。为防止误修改，颜色选择和文本输入只会改变工作台的预览色块，须点击「应用」才修改代码。更新后必须通过 TT 自带的主题保存保存结果。
+- **兼容性：** 代码静态检查和复杂 CSS 提取样例已通过，但尚未在 TT 2.3 iPhone 设备实测。先备份当前主题，停用旧 ThemeEditor 后再测试；如果遇到旧版 TT DOM 不匹配，新工具不会替换原生编辑区。
+- **现有功能：** 世界书清透布局、Resource Library 兼容、三横菜单、魔法棒、扩展设置完全不动。
 
 ## v0.1.21-beta.1 · 空选世界书提示文字垂直居中微调
 
