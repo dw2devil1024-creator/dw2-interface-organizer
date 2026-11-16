@@ -87,6 +87,54 @@ function caretPixelTop(field,position){
 export function createThemeStudio({notify=()=>{}}={}){
   let root=null,textarea=null,search=null,results=null;
   let timer=0,large=false,originalHeight=null,appearance='auto',warned=false;
+  let originalMaximize=null;
+  function moveNativeMaximize(actions){
+    // Reuse the actual TT button. Moving a DOM node preserves its native
+    // event handlers and data-for=customCSS; no proxy or duplicate created.
+    if(originalMaximize)return;
+    const node=document.querySelector('#CustomCSS-block > h4 > .editor_maximize[data-for="customCSS"]');
+    if(!node?.parentNode)return;
+    const host=node.parentElement;
+    const marker=document.createComment('DW2 CSS: original native maximize position');
+    const originalRole=node.getAttribute('role');
+    const originalTabindex=node.getAttribute('tabindex');
+    const originalAria=node.getAttribute('aria-label');
+    const onKey=(event)=>{
+      if(event.key==='Enter'||event.key===' '){
+        event.preventDefault();
+        node.click();
+      }
+    };
+    node.before(marker);
+    node.classList.add('dw2io-cs-btn','dw2io-cs-icon-btn','dw2io-cs-native-maximize');
+    node.setAttribute('role','button');
+    node.setAttribute('tabindex','0');
+    node.setAttribute('aria-label','TT 原生 CSS 编辑器最大化');
+    node.addEventListener('keydown',onKey);
+    host.classList.add('dw2io-cs-native-maximize-relocated');
+    actions.append(node);
+    originalMaximize={node,marker,host,originalRole,originalTabindex,originalAria,onKey};
+  }
+  function restoreNativeMaximize(){
+    const saved=originalMaximize;
+    if(!saved)return;
+    originalMaximize=null;
+    const {node,marker,host,onKey}=saved;
+    node.removeEventListener('keydown',onKey);
+    node.classList.remove('dw2io-cs-btn','dw2io-cs-icon-btn','dw2io-cs-native-maximize');
+    host?.classList.remove('dw2io-cs-native-maximize-relocated');
+    for(const [attribute,previous] of [
+      ['role',saved.originalRole],['tabindex',saved.originalTabindex],
+      ['aria-label',saved.originalAria]
+    ]){
+      if(previous===null)node.removeAttribute(attribute);
+      else node.setAttribute(attribute,previous);
+    }
+    if(marker.parentNode)marker.replaceWith(node);
+    else if(host?.isConnected)host.append(node);
+    else node.remove();
+    marker.remove();
+  }
   function render(){
     if(!root||!textarea||!search||!results)return;
     const q=search.value.trim();
@@ -207,6 +255,9 @@ export function createThemeStudio({notify=()=>{}}={}){
       iconBtn('fa-arrow-down','CSS 代码跳到底部',()=>scrollEditor(true)),
       resize,mode
     );
+    // Put the real native maximize icon in the same row as DW2 toolbar.
+    // TT itself still owns the action; its exact node returns on disable.
+    moveNativeMaximize(actions);
     toolbar.append(title,actions);
     const filters=el('div','filters');
     search=el('input','search');
@@ -228,6 +279,7 @@ export function createThemeStudio({notify=()=>{}}={}){
     textarea?.removeEventListener('input',syncSearch);
     document.removeEventListener('change',themeChange);
     resizeEditor(false);
+    restoreNativeMaximize();
     root?.remove();
     root=textarea=search=results=null;
     large=false;originalHeight=null;appearance='auto';
