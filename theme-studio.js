@@ -51,6 +51,44 @@ function iconBtn(iconName,label,handler){
   node.append(icon);
   return node;
 }
+/* Measure the actual wrapped text position instead of multiplying source
+ * line number by line-height. A single long CSS line wraps several times on
+ * an iPhone; line-based arithmetic drifts thousands of pixels by line 2600.
+ *
+ * Use a short-lived shadow-DOM mirror so theme CSS cannot restyle its metrics.
+ * The mirror is read-only and removed immediately after measuring.
+ */
+function measuredCaretTop(textarea,offset,length=0){
+  const style=getComputedStyle(textarea);
+  const host=document.createElement('div');
+  host.style.cssText='position:fixed;top:0;left:-100000px;width:1px;height:1px;visibility:hidden;pointer-events:none;z-index:-1;';
+  const shadow=host.attachShadow({mode:'closed'});
+  const mirror=document.createElement('div');
+  for(const key of [
+    'fontFamily','fontSize','fontWeight','fontStyle','fontVariant','fontStretch',
+    'lineHeight','letterSpacing','wordSpacing','textIndent','textTransform',
+    'textAlign','direction','tabSize','paddingTop','paddingLeft','paddingRight','paddingBottom'
+  ])mirror.style[key]=style[key];
+  mirror.style.width=textarea.clientWidth+'px';
+  mirror.style.boxSizing='border-box';
+  mirror.style.whiteSpace=textarea.wrap==='off'?'pre':'pre-wrap';
+  mirror.style.overflowWrap='break-word';
+  mirror.style.wordBreak=style.wordBreak||'normal';
+  mirror.style.border='0';
+  mirror.style.margin='0';
+  mirror.textContent=textarea.value.slice(0,offset);
+  const marker=document.createElement('span');
+  marker.textContent=textarea.value.slice(offset,offset+Math.max(1,length))||'\u200b';
+  mirror.append(marker);
+  shadow.append(mirror);
+  document.body.append(host);
+  try {
+    const top=marker.getBoundingClientRect().top-mirror.getBoundingClientRect().top;
+    return Number.isFinite(top)?top:null;
+  } finally {
+    host.remove();
+  }
+}
 export function createThemeStudio({notify=()=>{}}={}){
   let root=null,textarea=null,search=null,results=null,status=null;
   let timer=0,large=false,originalHeight=null,appearance='auto',warned=false;
@@ -83,15 +121,22 @@ export function createThemeStudio({notify=()=>{}}={}){
   function jump(start,length=0){
     if(!textarea)return;
     const t=textarea,pos=Math.min(t.value.length,Math.max(0,start));
+    const end=Math.min(t.value.length,pos+Math.max(0,length));
     const line=t.value.slice(0,pos).split('\n').length;
-    const computed=getComputedStyle(t);
-    const height=parseFloat(computed.lineHeight)||((parseFloat(computed.fontSize)||14)*1.5);
+    // Exact pixel position accounts for soft-wrapped long CSS rules on mobile.
+    let y;
+    try { y=measuredCaretTop(t,pos,end-pos); }catch(error){y=null;}
     try{t.focus({preventScroll:true});}catch{t.focus();}
-    t.setSelectionRange(pos,Math.min(t.value.length,pos+length));
-    t.scrollIntoView({block:'center',behavior:'smooth'});
-    // iOS WebKit can scroll back to the former cursor; correct after caret moves.
-    const scroll=()=>{if(t.isConnected)t.scrollTop=Math.max(0,(line-3)*height);};
-    scroll();requestAnimationFrame(scroll);
+    t.setSelectionRange(pos,end);
+    // Bring the *textarea* into view, then align its *internal* scroll area.
+    t.scrollIntoView({block:'center',behavior:'auto'});
+    if(y!=null){
+      const desired=Math.max(0,Math.min(t.scrollHeight-t.clientHeight,y-t.clientHeight*.30));
+      const align=()=>{if(t.isConnected)t.scrollTop=desired;};
+      align();
+      requestAnimationFrame(()=>{align();requestAnimationFrame(align);});
+    }
+    message('已定位到第 '+line+' 行，已选中「'+t.value.slice(pos,end)+'」。');
   }
   function scrollEditor(bottom){
     if(!textarea)return;
