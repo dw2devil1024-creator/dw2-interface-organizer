@@ -1535,3 +1535,93 @@
     min-height:27px!important;
   }
 }
+
+/* =========================================================
+   DW2 · User UI five collapsible sections v0.1.29
+   Scope: native User Settings drawer only; no native widgets cloned.
+   Light, unframed headers and a thin divider match DW2 World layout.
+========================================================= */
+#user-settings-block details.dw2io-ui-fold {
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  margin:3px 0 5px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+#user-settings-block details.dw2io-ui-fold > summary.dw2io-ui-fold-summary {
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  min-height:42px!important;
+  padding:9px 11px!important;
+  margin:0!important;
+  border:0!important;
+  border-bottom:1px solid var(--SmartThemeBorderColor,rgba(150,150,150,.2))!important;
+  background:transparent!important;
+  color:var(--SmartThemeBodyColor,inherit)!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  line-height:1.55!important;
+  text-align:left!important;
+  cursor:pointer!important;
+  list-style:none!important;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+}
+#user-settings-block details.dw2io-ui-fold > summary::-webkit-details-marker{
+  display:none!important;
+}
+#user-settings-block details.dw2io-ui-fold > summary::marker{
+  content:''!important;
+}
+#user-settings-block details.dw2io-ui-fold > summary .dw2io-ui-fold-arrow {
+  display:inline-block!important;
+  flex:0 0 auto!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  color:inherit!important;
+  opacity:.67!important;
+  transform:rotate(0deg)!important;
+  transition:transform .19s ease!important;
+  pointer-events:none!important;
+}
+#user-settings-block details.dw2io-ui-fold[open] > summary .dw2io-ui-fold-arrow{
+  transform:rotate(180deg)!important;
+}
+#user-settings-block details.dw2io-ui-fold > .dw2io-ui-fold-content {
+  display:block!important;
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding:11px 0 9px!important;
+  margin:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#user-settings-block details.dw2io-ui-fold:not([open]) > .dw2io-ui-fold-content{
+  display:none!important;
+}
+/* Native h4 is kept for TT search and translations, only visually hidden
+   while its exact original controls are mounted inside our accordion. */
+#user-settings-block details.dw2io-ui-fold > .dw2io-ui-fold-content > [name="CharacterHandlingToggles"] > h4:first-child,
+#user-settings-block details.dw2io-ui-fold > .dw2io-ui-fold-content > [name="MiscellaneousToggles"] > h4:first-child,
+#user-settings-block details.dw2io-ui-fold > .dw2io-ui-fold-content > [name="ChatMessageHandlingToggles"] > h4:first-child,
+#user-settings-block details.dw2io-ui-fold > .dw2io-ui-fold-content > [name="STscriptToggles"] > h4:first-child {
+  display:none!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #user-settings-block details.dw2io-ui-fold > summary .dw2io-ui-fold-arrow{
+    transition:none!important;
+  }
+}
