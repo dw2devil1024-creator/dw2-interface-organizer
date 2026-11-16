@@ -17,7 +17,17 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.30-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.31-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.31-beta.1 · 用户界面折叠边界修正与全部箭头对齐
+
+基于 TT 2.3 iPhone 三张实机截图修正上个版本的折叠归属问题和原生箭头未统一的问题：
+
+- **修复杂项吞并自定义 CSS**：TT 原生 `[name="MiscellaneousToggles"]` 实际同时包含杂项勾选框、移动 UI 预设和 `#CustomCSS-block`。新版只折叠在 `#CustomCSS-block` 前的杂项标题与所有杂项控件；**完整保留 `#CustomCSS-block`（含原生 CSS 输入框及 DW2 工作台）在折叠栏之外**。保留原始父节点与控件 ID，避免破坏 CSS 编辑器。
+- **修复聊天／消息处理吞并两个原生子栏**：TT 原生 `[name="ChatMessageHandlingToggles"]` 的尾部含「自动滑动」(`Auto-swipe`) 和「自动继续」(`Auto-Continue`) 两个原生 inline-drawer。新版只折叠它们**之前的**聊天消息设置，两个原生栏独立保留在聊天／消息处理折叠栏之后，不克隆或重建其事件。独立的「自动补全设置」也继续独立显示。
+- **九处箭头统一（五个 DW2 折叠 + 四个 TT 原生折叠）**：对主题颜色、自动滑动、自动继续、自动补全设置的原生标题以 data-i18n 精确加样式钩子（修正上一版找不到自动补全的选择器）；五个 DW2 标题与四个原生标题使用相同的右内边距、20px 图标槽位、11px 细线箭头和相同的上下中心线。不再显示原生灰色实心圆形按钮。收起／展开继续由 TT 原始事件处理。
+- **随时还原**：禁用「用户界面 · 五折叠」时，将所有原生控件按占位符还原到原顺序，移除标题样式钩子和顶栏网格样式，不修改 TT 实际设置。世界书、CSS 搜索工作台、其他 DW2 插件保持不变。
+- **验证**：静态语法与 CSS 括号检查、模拟 DOM 中五折叠/搜索/开关恢复测试均通过；重点验证 CSS 未进入杂项折叠、自动滑动/自动继续未进入聊天折叠、自动补全仍是独立栏、四个原生按钮均找到样式钩子。iPhone 实机视觉与交互仍需验收。
 
 ## v0.1.30-beta.1 · 用户设置页顶部三排整理、外观选项两列及原生箭头统一
 
