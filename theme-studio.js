@@ -1,0 +1,271 @@
+/* DW2 CSS Studio: scoped enhancement for TT's native #customCSS editor.
+ * Color edits are exact-span replacements with validation and single-step undo.
+ */
+const ID='dw2io-css-studio';
+const HEX=/^#(?:[a-f\d]{8}|[a-f\d]{6}|[a-f\d]{4}|[a-f\d]{3})\b/i;
+const NAMED=/^(?:transparent|black|white|red|green|blue|yellow|cyan|magenta|gray|grey|orange|pink|purple|brown|silver|gold|navy|olive|teal|rebeccapurple)\b/i;
+const FUN=/^(?:rgba?|hsla?)\(/i;
+function validColor(v) {
+  try { return CSS.supports('color',v); } catch {}
+  const test=document.createElement('span');test.style.color=v;return !!test.style.color;
+}
+function tokens(value,offset) {
+  const found=[];let quote='',comment=false;
+  for(let i=0;i<value.length;i++){
+    const c=value[i],n=value[i+1],prev=value[i-1]||'';
+    if(comment){if(c==='*'&&n==='/'){comment=false;i++;}continue;}
+    if(quote){if(c==='\\'){i++;continue;}if(c===quote)quote='';continue;}
+    if(c==='/'&&n==='*'){comment=true;i++;continue;}
+    if(c==='"'||c==="'"){quote=c;continue;}
+    if(/[\w-]/.test(prev))continue;
+    if(/^url\(/i.test(value.slice(i))){
+      let depth=0,q='';
+      for(;i<value.length;i++){
+        const v=value[i];
+        if(q){if(v==='\\'){i++;continue;}if(v===q)q='';continue;}
+        if(v==='"'||v==="'"){q=v;continue;}
+        if(v==='(')depth++;
+        if(v===')'&&--depth===0)break;
+      }
+      continue;
+    }
+    let raw=value.slice(i).match(HEX)?.[0]||value.slice(i).match(NAMED)?.[0]||'';
+    if(!raw && FUN.test(value.slice(i))){
+      let depth=0,q='',j=i;
+      for(;j<value.length;j++){
+        const v=value[j];
+        if(q){if(v==='\\'){j++;continue;}if(v===q)q='';continue;}
+        if(v==='"'||v==="'"){q=v;continue;}
+        if(v==='(')depth++;
+        if(v===')'&&--depth===0){j++;break;}
+      }
+      if(depth===0)raw=value.slice(i,j);
+    }
+    if(raw && validColor(raw)){
+      found.push({start:offset+i,end:offset+i+raw.length,color:raw});
+      i+=raw.length-1;
+    }
+  }
+  return found;
+}
+function extract(css) {
+  const found=[],stack=[];let comment=false,quote='',paren=0,start=0;
+  const process=(s,e)=>{
+    if(!stack.length)return;
+    const part=css.slice(s,e),sep=part.indexOf(':');
+    if(sep<0)return;
+    const property=part.slice(0,sep).replace(/\/\*[\s\S]*?\*\//g,'').trim();
+    if(!/^(?:--[\w-]+|-?[a-z][\w-]*)$/i.test(property))return;
+    const tail=part.slice(sep+1),space=tail.match(/^\s*/)?.[0].length||0;
+    const val=tail.slice(space);
+    const selector=stack.map(x=>x.replace(/\/\*[\s\S]*?\*\//g,'').trim()).filter(Boolean).join(' / ');
+    for(const item of tokens(val,s+sep+1+space)){
+      found.push({...item,property,selector,line:css.slice(0,item.start).split('\n').length});
+    }
+  };
+  for(let i=0;i<css.length;i++){
+    const c=css[i],n=css[i+1];
+    if(comment){if(c==='*'&&n==='/'){comment=false;i++;}continue;}
+    if(quote){if(c==='\\'){i++;continue;}if(c===quote)quote='';continue;}
+    if(c==='/'&&n==='*'){comment=true;i++;continue;}
+    if(c==='"'||c==="'"){quote=c;continue;}
+    if(c==='('){paren++;continue;}
+    if(c===')'){paren=Math.max(0,paren-1);continue;}
+    if(paren)continue;
+    if(c==='{'){stack.push(css.slice(start,i));start=i+1;}
+    else if(c===';'){process(start,i);start=i+1;}
+    else if(c==='}'){process(start,i);stack.pop();start=i+1;}
+  }
+  return {items:stack.length?[]:found,unbalanced:!!stack.length};
+}
+function el(tag,cls='',text) {
+  const node=document.createElement(tag);
+  if(cls)node.className='dw2io-cs-'+cls;
+  if(text!=null)node.textContent=text;
+  return node;
+}
+function btn(text,fn,title='') {
+  const node=el('button','btn',text);node.type='button';node.title=title||text;node.addEventListener('click',fn);return node;
+}
+function hexColor(v){
+  const ctx=document.createElement('canvas').getContext('2d');if(!ctx)return null;
+  ctx.fillStyle='#000000';ctx.fillStyle=v;
+  const raw=ctx.fillStyle;
+  if(/^#[\da-f]{6}$/i.test(raw))return raw;
+  if(/^#[\da-f]{3}$/i.test(raw))return '#'+[...raw.slice(1)].map(c=>c+c).join('');
+  const rgb=raw.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/i);
+  return rgb?'#'+rgb.slice(1,4).map(x=>Number(x).toString(16).padStart(2,'0')).join(''):null;
+}
+function alphaOf(v){
+  if(/^#[\da-f]{8}$/i.test(v))return +(parseInt(v.slice(7),16)/255).toFixed(3);
+  if(/^#[\da-f]{4}$/i.test(v))return +(parseInt(v.slice(4).repeat(2),16)/255).toFixed(3);
+  if(/^transparent$/i.test(v))return 0;
+  const old=v.match(/,\s*([\d.]+)\s*\)$/);
+  if(/^(?:rgba|hsla)\(/i.test(v)&&old)return Number(old[1]);
+  const modern=v.match(/\/\s*([\d.]+)(%)?\s*\)$/);
+  if(modern)return Number(modern[1])/(modern[2]?100:1);
+  return null;
+}
+function maintainAlpha(hex,original){
+  const a=alphaOf(original);if(a==null||!Number.isFinite(a))return hex;
+  const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+  return 'rgba('+rgb.join(', ')+', '+a+')';
+}
+export function createThemeStudio({notify=()=>{}}={}){
+  let root=null,textarea=null,results=null,search=null,hint=null,undoControl=null;
+  let enabled=false,expanded=false,large=false,dark=false,timer=0;
+  let originalHeight=null,undo=[],lastTheme='';
+  const currentTheme=()=>document.getElementById('themes')?.value||'';
+  const message=(text,warning=false)=>{if(hint)hint.textContent=text;if(warning)notify(text,'warning');};
+  function jump(start,length=0){
+    if(!textarea)return;
+    const pos=Math.min(Math.max(0,start),textarea.value.length);
+    const row=textarea.value.slice(0,pos).split('\n').length;
+    const size=parseFloat(getComputedStyle(textarea).lineHeight)||18;
+    textarea.focus();textarea.setSelectionRange(pos,pos+length);
+    textarea.scrollTop=Math.max(0,(row-4)*size);
+    textarea.scrollIntoView({block:'center',behavior:'smooth'});
+  }
+  function writeCSS(code){
+    textarea.value=code;
+    textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    textarea.dispatchEvent(new Event('change',{bubbles:true}));
+    const native=document.getElementById('custom-style');
+    if(native)native.textContent=code;
+    draw();
+  }
+  function apply(item,value){
+    const existing=textarea.value;
+    if(existing.slice(item.start,item.end)!==item.color){
+      message('代码已变化，请刷新后重新定位颜色。',true);draw();return;
+    }
+    if(!validColor(value)){message('颜色格式无效，未修改 CSS。',true);return;}
+    if(value===item.color)return;
+    undo.push({theme:currentTheme(),css:existing});
+    if(undo.length>12)undo.shift();
+    writeCSS(existing.slice(0,item.start)+value+existing.slice(item.end));
+    message('已精确修改这一处颜色。记得保存到 TT 主题。');
+  }
+  function revert(){
+    const previous=undo.pop();if(!previous)return;
+    if(previous.theme!==currentTheme()){
+      undo=[];message('已切换主题，不能跨主题撤销。',true);return;
+    }
+    writeCSS(previous.css);message('已撤销上一处颜色修改。');
+  }
+  function draw(){
+    if(!expanded||!root||!textarea)return;
+    results.replaceChildren();
+    const code=textarea.value,query=search.value.trim().toLowerCase();
+    const parsed=extract(code);
+    if(parsed.unbalanced){
+      results.append(el('p','empty','CSS 存在未闭合的代码块，颜色编辑已暂时停用。'));return;
+    }
+    const filtered=parsed.items.filter(x=>!query||(x.selector+' '+x.property+' '+x.color).toLowerCase().includes(query));
+    results.append(el('div','result-title','可编辑颜色 · '+filtered.length+' 项'));
+    for(const item of filtered.slice(0,150)){
+      const row=el('div','row');
+      const meta=el('div','meta');
+      meta.append(el('span','selector',item.selector||'CSS 规则'),el('span','property',item.property+' · 第 '+item.line+' 行'));
+      const tools=el('div','controls');
+      const chip=el('span','chip');chip.style.backgroundColor=item.color;
+      const value=el('input','value');value.type='text';value.value=item.color;value.spellcheck=false;
+      const h=hexColor(item.color);
+      if(h){
+        const picker=el('input','picker');picker.type='color';picker.value=h;picker.title='挑选新颜色（保留原透明度）';
+        picker.addEventListener('input',()=>{value.value=maintainAlpha(picker.value,item.color);chip.style.backgroundColor=value.value;});
+        tools.append(picker);
+      }
+      value.addEventListener('input',()=>{chip.style.backgroundColor=validColor(value.value)?value.value:'transparent';});
+      value.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();apply(item,value.value.trim());}});
+      tools.append(chip,value,btn('应用',()=>apply(item,value.value.trim())),btn('定位',()=>jump(item.start,item.color.length)));
+      row.append(meta,tools);results.append(row);
+    }
+    if(filtered.length>150)results.append(el('p','empty','为保证手机流畅，仅显示前 150 项；输入关键词可缩小范围。'));
+    if(!filtered.length)results.append(el('p','empty','没有匹配的颜色。'));
+    if(query){
+      results.append(el('div','result-title','原始 CSS 搜索结果'));
+      let from=0,count=0;const lower=code.toLowerCase();
+      while(count<30){
+        const pos=lower.indexOf(query,from);if(pos<0)break;
+        const start=code.lastIndexOf('\n',pos-1)+1,end=code.indexOf('\n',pos);
+        const row=code.slice(0,pos).split('\n').length;
+        const snippet=code.slice(start,end<0?code.length:end).trim().slice(0,100);
+        results.append(btn('第 '+row+' 行 · '+snippet,()=>jump(pos,query.length)));
+        from=pos+Math.max(1,query.length);count++;
+      }
+      if(!count)results.append(el('p','empty','原始 CSS 没有匹配内容。'));
+    }
+    undoControl.disabled=!undo.length;
+  }
+  function save(asNew=false){
+    const native=document.getElementById(asNew?'ui-preset-save-button':'ui-preset-update-button');
+    if(!native||getComputedStyle(native).display==='none'){
+      message('找不到 TT 原生主题保存按钮，请切换到主题设置页面。',true);return;
+    }
+    native.click();
+    message('已触发 TT 原生'+(asNew?'另存为':'更新主题')+'操作，请以 TT 提示为准。');
+  }
+  function setLarge(value){
+    large=!!value;if(!textarea)return;
+    if(large){
+      if(!originalHeight)originalHeight={value:textarea.style.getPropertyValue('min-height'),priority:textarea.style.getPropertyPriority('min-height')};
+      textarea.style.setProperty('min-height','min(60dvh, 680px)','important');
+    }else if(originalHeight){
+      if(originalHeight.value)textarea.style.setProperty('min-height',originalHeight.value,originalHeight.priority);
+      else textarea.style.removeProperty('min-height');
+      originalHeight=null;
+    }
+  }
+  function inputChanged(){clearTimeout(timer);if(expanded)timer=setTimeout(draw,240);}
+  function themeChanged(event){
+    if(event.target?.id!=='themes')return;
+    undo=[];lastTheme=currentTheme();
+    clearTimeout(timer);if(expanded)timer=setTimeout(draw,180);
+  }
+  function mount(){
+    const t=document.getElementById('customCSS'),block=document.getElementById('CustomCSS-textAreaBlock');
+    if(!(t instanceof HTMLTextAreaElement)||!block?.parentNode)return false;
+    if(document.querySelector('#visual-css-editor-new,#native-css-toolbar-new')){
+      return false; // Do not stack two editors; old ThemeEditor must be disabled first.
+    }
+    textarea=t;root=el('section','root');root.id=ID;
+    const bar=el('div','toolbar'),title=el('strong','title','DW2 · CSS 工作台');
+    const actions=el('div','actions'),body=el('div','body');body.hidden=true;
+    const toggle=btn('展开',()=>{expanded=!expanded;body.hidden=!expanded;toggle.textContent=expanded?'收起':'展开';draw();});
+    const height=btn('扩框',()=>{setLarge(!large);height.textContent=large?'还原高度':'扩框';});
+    actions.append(
+      btn('保存',()=>save()),btn('另存',()=>save(true)),
+      btn('刷新',draw),btn('首尾',()=>{textarea.scrollTop=textarea.scrollTop<textarea.scrollHeight/3?textarea.scrollHeight:0;textarea.focus();}),
+      height,btn('浅/深',()=>{dark=!dark;root.dataset.mode=dark?'dark':'light';}),toggle
+    );
+    bar.append(title,actions);
+    const filters=el('div','filters');
+    search=el('input','search');search.type='search';search.placeholder='搜索颜色、选择器、原始 CSS';
+    search.addEventListener('input',draw);
+    undoControl=btn('↶ 撤销',revert);undoControl.disabled=true;
+    filters.append(search,undoControl);
+    results=el('div','results');
+    hint=el('p','hint','选择颜色并点击「应用」，不会自动替换整段 CSS。');
+    body.append(filters,results,hint);root.append(bar,body);
+    block.insertAdjacentElement('afterend',root);
+    lastTheme=currentTheme();
+    textarea.addEventListener('input',inputChanged);
+    document.addEventListener('change',themeChanged);
+    return true;
+  }
+  function disable(){
+    enabled=false;clearTimeout(timer);timer=0;
+    textarea?.removeEventListener('input',inputChanged);
+    document.removeEventListener('change',themeChanged);
+    setLarge(false);root?.remove();
+    root=textarea=results=search=hint=undoControl=null;
+    undo=[];expanded=false;large=false;
+  }
+  function sync(on){
+    if(!on){if(root||enabled)disable();return;}
+    if(root && (!root.isConnected||textarea!==document.getElementById('customCSS')))disable();
+    enabled=true;if(!root)mount();
+  }
+  return {sync,disable};
+}
