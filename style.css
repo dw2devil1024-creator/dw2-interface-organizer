@@ -1942,3 +1942,58 @@
   .dw2io-ui-native-chevron.inline-drawer-toggle > .inline-drawer-icon:not(.down) {
   transform:rotate(180deg)!important;
 }
+
+/* =========================================================
+   DW2 · User UI final polish v0.1.32
+   Theme Colors' native glowing HR goes ABOVE its header by visual flex
+   order only, preserving the real DOM and reversible native placement.
+   The independent CSS accordion contains TT's real editor and DW2 tools.
+========================================================= */
+#user-settings-block.dw2io-ui-layout-active
+  #UI-Theme-Block [name="themeElements"] > [name="AvatarAndChatDisplay"] {
+  order:0!important;
+}
+#user-settings-block.dw2io-ui-layout-active
+  #UI-Theme-Block [name="themeElements"] > hr:first-of-type {
+  order:1!important;
+}
+#user-settings-block.dw2io-ui-layout-active
+  #UI-Theme-Block [name="themeElements"] > .inline-drawer {
+  order:2!important;
+}
+#user-settings-block.dw2io-ui-layout-active
+  #UI-Theme-Block [name="themeElements"] > details#dw2io-ui-fold-display {
+  order:3!important;
+}
+/* A native <h4> inside Custom CSS still owns the TT maximize control.
+   Hide only its duplicate title. The original maximize button survives
+   in a slim right-aligned toolbar when the CSS fold is open. */
+#user-settings-block.dw2io-ui-layout-active
+  details#dw2io-ui-fold-css > .dw2io-ui-fold-content #CustomCSS-block > h4 {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  min-height:24px!important;
+  padding:1px 11px 3px!important;
+  margin:0 0 4px!important;
+  background:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+#user-settings-block.dw2io-ui-layout-active
+  details#dw2io-ui-fold-css > .dw2io-ui-fold-content #CustomCSS-block > h4 > span {
+  display:none!important;
+}
+#user-settings-block.dw2io-ui-layout-active
+  details#dw2io-ui-fold-css > .dw2io-ui-fold-content #CustomCSS-block > h4 > .editor_maximize {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:24px!important;
+  min-height:24px!important;
+  margin:0!important;
+  padding:2px!important;
+  cursor:pointer!important;
+}
