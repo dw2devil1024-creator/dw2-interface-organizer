@@ -42,6 +42,43 @@ export function createUserUILayout(){
   let searchInput=null;
   let searching=false;
   let beforeSearch=null;
+  let decoratedRoot=null;
+  const nativeChevronHeaders=new Set();
+  function decorateNativeUI(){
+    // Only add reversible classes. The native question-mark, language select,
+    // settings search, TT controls and four style selects never move or clone.
+    const root=document.getElementById('user-settings-block');
+    if(decoratedRoot && decoratedRoot!==root){
+      decoratedRoot.classList.remove('dw2io-ui-layout-active');
+      decoratedRoot=null;
+    }
+    if(!root)return;
+    root.classList.add('dw2io-ui-layout-active');
+    decoratedRoot=root;
+    const labels=[
+      '#UI-Theme-Block [name="themeElements"] .inline-drawer-toggle [data-i18n="Theme Colors"]',
+      '[name="ChatMessageHandlingToggles"] .inline-drawer-toggle [data-i18n="AutoComplete Settings"]'
+    ];
+    for(const selector of labels){
+      const header=root.querySelector(selector)?.closest('.inline-drawer-toggle');
+      if(header && !nativeChevronHeaders.has(header)){
+        header.classList.add('dw2io-ui-native-chevron');
+        nativeChevronHeaders.add(header);
+      }
+    }
+    for(const header of nativeChevronHeaders){
+      if(!root.contains(header)){
+        header.classList.remove('dw2io-ui-native-chevron');
+        nativeChevronHeaders.delete(header);
+      }
+    }
+  }
+  function restoreNativeUI(){
+    decoratedRoot?.classList.remove('dw2io-ui-layout-active');
+    decoratedRoot=null;
+    for(const header of nativeChevronHeaders)header.classList.remove('dw2io-ui-native-chevron');
+    nativeChevronHeaders.clear();
+  }
   const findTargets=(config)=>{
     const root=document.querySelector(config.parent);
     if(!root)return null;
@@ -133,12 +170,14 @@ export function createUserUILayout(){
       }
     }
     for(const config of CONFIG)mountGroup(config);
+    decorateNativeUI();
     bindSearch();
   }
   function disable(){
     searchInput?.removeEventListener('input',onSearch);
     searchInput=null;searching=false;beforeSearch=null;
     for(const key of [...mounted.keys()])removeGroup(key);
+    restoreNativeUI();
   }
   return {sync,disable};
 }
