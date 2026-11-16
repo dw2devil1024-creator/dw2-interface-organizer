@@ -1,7 +1,7 @@
 import { extensionTypes, openThirdPartyExtensionMenu } from '../../../extensions.js';
 import { getRequestHeaders } from '../../../../script.js';
-import { createThemeStudio } from './theme-studio.js?v=0.1.31-beta.1';
-import { createUserUILayout } from './user-ui-layout.js?v=0.1.31-beta.1';
+import { createThemeStudio } from './theme-studio.js?v=0.1.32-beta.1';
+import { createUserUILayout } from './user-ui-layout.js?v=0.1.32-beta.1';
 /* DW2 · Interface Organizer | Private-use beta
  * Owns only three surfaces: native hamburger menu, magic-wand entries, and
  * the outer layout of the native Extensions settings drawer.
@@ -13,7 +13,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.31-beta.1';
+const VERSION = '0.1.32-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
@@ -880,9 +880,9 @@ function attachAccessPoints() {
   userTrack.setAttribute('aria-hidden','true');
   userTrack.append(el('span','dw2io-switch-thumb'));
   userRow.append(userCheckbox,userTrack,
-    el('span','dw2io-switch-copy','用户界面 · 五折叠（关闭恢复原版）'));
+    el('span','dw2io-switch-copy','用户界面 · 六折叠（关闭恢复原版）'));
   body.append(toggleRow,worldRow,cssRow,userRow,actions,el('div','dw2io-settings-caption',
-    '三横菜单、魔法棒、扩展设置、世界书布局、CSS 工作台与用户界面五折叠独立控制；原生数据与保存逻辑不变。'));
+    '三横菜单、魔法棒、扩展设置、世界书布局、CSS 工作台与用户界面六折叠独立控制；原生数据与保存逻辑不变。'));
   drawer.append(header,body);settingsEntry.append(drawer);root.append(settingsEntry);
   let expanded=false;
   const expand=(e)=>{
@@ -962,8 +962,8 @@ function renderPanel(){
   const cs=section('css','05 · CSS 工作台','只保留常用 CSS 注释／代码搜索定位与编辑辅助工具；不再显示颜色卡片，不修改原生主题数据。');
   cs.append(checkbox('启用 CSS 工作台',state.themeStudioEnabled,v=>save({themeStudioEnabled:v}),
     '默认关闭。需先停用旧的 ThemeEditor；工具栏出现在 TT「自定义 CSS」输入框上面。'));
-  const ui=section('ui','06 · 用户界面 · 五折叠','把显示选项、角色处理、杂项、聊天／消息处理与 STscript 设为可还原的默认收起折叠栏。');
-  ui.append(checkbox('启用用户界面五折叠',state.userLayoutEnabled,v=>save({userLayoutEnabled:v}),
+  const ui=section('ui','06 · 用户界面 · 六折叠','把显示选项、角色处理、杂项、自定义 CSS、聊天／消息处理与 STscript 设为可还原的默认收起折叠栏。');
+  ui.append(checkbox('启用用户界面六折叠',state.userLayoutEnabled,v=>save({userLayoutEnabled:v}),
     'UI 主题、原生主题颜色、自定义 CSS 不动；搜索设置时自动展开，关闭开关恢复原始结构。'));
   root.append(el('p','dw2io-foot',`DW2 · Interface Organizer ${VERSION} · 私用测试版 · 不自动更新`));
   root.scrollTop=pos;
