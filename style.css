@@ -1520,8 +1520,7 @@
   white-space:pre-wrap!important;
   overflow-wrap:anywhere!important;
 }
-#dw2io-css-studio .dw2io-cs-empty,
-#dw2io-css-studio .dw2io-cs-hint {
+#dw2io-css-studio .dw2io-cs-empty {
   font-size:11px!important;
   line-height:1.5!important;
   color:var(--cs-muted)!important;
