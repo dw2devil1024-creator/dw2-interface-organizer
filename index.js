@@ -1,6 +1,6 @@
 import { extensionTypes, openThirdPartyExtensionMenu } from '../../../extensions.js';
 import { getRequestHeaders } from '../../../../script.js';
-import { createThemeStudio } from './theme-studio.js?v=0.1.23-beta.1';
+import { createThemeStudio } from './theme-studio.js?v=0.1.24-beta.1';
 /* DW2 · Interface Organizer | Private-use beta
  * Owns only three surfaces: native hamburger menu, magic-wand entries, and
  * the outer layout of the native Extensions settings drawer.
@@ -12,7 +12,7 @@ const WAND_MORE_ID = 'dw2io-wand-more';
 const SETTINGS_ID = 'dw2io-settings';
 const EXTRA_ID = 'dw2io-more-menu';
 const EXT_HEADER_ID = 'dw2io-ext-more';
-const VERSION = '0.1.23-beta.1';
+const VERSION = '0.1.24-beta.1';
 
 const NATIVE_MENU = [
   ['option_toggle_AN', '作者注释'],
