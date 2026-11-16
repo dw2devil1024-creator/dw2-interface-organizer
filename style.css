@@ -1392,8 +1392,8 @@
 #dw2io-css-studio .dw2io-cs-btn {border:1px solid var(--cs-line)!important;color:var(--cs-text)!important;background:var(--cs-inner)!important;border-radius:7px!important;min-height:28px!important;padding:4px 8px!important;font-size:11px!important;font-weight:500!important;line-height:1.35!important;white-space:nowrap!important;cursor:pointer!important;box-shadow:none!important;text-transform:none!important;}
 #dw2io-css-studio .dw2io-cs-btn:disabled {opacity:.38!important;cursor:default!important;}
 #dw2io-css-studio .dw2io-cs-btn:focus-visible,#dw2io-css-studio input:focus-visible {outline:1px solid var(--cs-text)!important;outline-offset:2px!important;}
-#dw2io-css-studio .dw2io-cs-body {border-top:1px solid var(--cs-line)!important;margin-top:9px!important;padding-top:9px!important;min-width:0!important;}
-#dw2io-css-studio .dw2io-cs-filters {display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important;}
+#dw2io-css-studio .dw2io-cs-body {border-top:0!important;margin-top:5px!important;padding-top:2px!important;min-width:0!important;}
+#dw2io-css-studio .dw2io-cs-filters {display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important;margin-top:8px!important;padding-top:8px!important;border-top:1px solid var(--cs-line)!important;}
 #dw2io-css-studio .dw2io-cs-search,#dw2io-css-studio .dw2io-cs-value {
   display:block!important;
   color:var(--cs-text)!important;
@@ -1414,7 +1414,7 @@
 #dw2io-css-studio .dw2io-cs-result-title {font-size:11px!important;font-weight:650!important;margin:12px 1px 7px!important;opacity:.82!important;}
 #dw2io-css-studio .dw2io-cs-row {border:1px solid var(--cs-line)!important;border-radius:9px!important;padding:7px!important;background:var(--cs-inner)!important;display:flex!important;flex-direction:column!important;gap:6px!important;min-width:0!important;margin-bottom:6px!important;}
 #dw2io-css-studio .dw2io-cs-meta {display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;column-gap:12px!important;row-gap:3px!important;min-width:0!important;}
-#dw2io-css-studio .dw2io-cs-selector {font-size:11px!important;font-weight:550!important;white-space:normal!important;overflow-wrap:anywhere!important;min-width:0!important;flex:1 1 150px!important;}
+#dw2io-css-studio .dw2io-cs-selector {font-size:11px!important;font-weight:550!important;white-space:normal!important;overflow-wrap:anywhere!important;min-width:0!important;flex:1 1 auto!important;}
 #dw2io-css-studio .dw2io-cs-property {font-size:10px!important;color:var(--cs-muted)!important;flex:0 0 auto!important;}
 #dw2io-css-studio .dw2io-cs-controls {display:flex!important;align-items:center!important;gap:5px!important;min-width:0!important;}
 #dw2io-css-studio .dw2io-cs-picker {appearance:auto!important;-webkit-appearance:revert!important;display:block!important;flex:0 0 30px!important;width:30px!important;height:30px!important;min-height:30px!important;padding:2px!important;border:1px solid var(--cs-line)!important;border-radius:7px!important;background:transparent!important;box-shadow:none!important;}
@@ -1431,6 +1431,7 @@
   #dw2io-css-studio .dw2io-cs-actions{justify-content:flex-start!important;}
   #dw2io-css-studio .dw2io-cs-btn{font-size:10px!important;padding:4px 6px!important;min-height:27px!important;}
   #dw2io-css-studio .dw2io-cs-meta{flex-direction:column!important;align-items:flex-start!important;}
+  #dw2io-css-studio .dw2io-cs-selector{flex:0 1 auto!important;}
 }
 
 /* v0.1.23 · Icon-only navigation and appearance controls.
