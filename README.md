@@ -17,7 +17,19 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.32-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.33-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.33-beta.1 · 原生 CSS 最大化按钮合并至 DW2 工作台按钮行
+
+针对 TT 2.3 iPhone 用户设置页最后的视觉细节：
+
+- 将 `#CustomCSS-block > h4 > .editor_maximize[data-for="customCSS"]` **原生按钮本身**移动至 `#dw2io-css-studio .dw2io-cs-actions` 按钮行尾部，不复制、不模拟点击，也不移走或替换原生 CSS 文本框；原按钮的事件监听、`data-for`、工具提示与功能继续由 TT 负责。
+- 在原位置留注释占位符；DW2 CSS 工作台关闭、卸载或重建时，先将原生按钮放回原位置，再移除工作台。还原原生按钮的 class、role、tabindex、aria-label；新增键盘激活辅助。
+- 仅在原生按钮被移动后隐藏「自定义 CSS」折叠内部多余的空 `h4` 行。若 CSS 工作台单独关闭，原生最大化按钮恢复到 `h4`，不会凭空消失。
+- 原生最大化按钮与 DW2 其他工具按钮统一 30×28px、7px 圆角、边框、文字颜色、背景和图标大小。原生全屏与 DW2 临时扩高是两个不同的操作，均保留且不改其工作逻辑。
+- 不调整六折叠顺序、顶栏布局、主题颜色分隔线、搜索定位、世界书或其他插件。
+
+已核对 TT 通过对 `.editor_maximize` 的事件委托处理原生最大化点击；同时完成 JS 语法、CSS 花括号与所有版本引用静态检查。仍需在 TT 2.3 iPhone 实机上验证按钮位置、点击及关闭工作台恢复。
 
 ## v0.1.32-beta.1 · 主题颜色分隔线位置与独立自定义 CSS 折叠
 
