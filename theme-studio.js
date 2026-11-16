@@ -59,9 +59,11 @@ function extract(css) {
     const tail=part.slice(sep+1),space=tail.match(/^\s*/)?.[0].length||0;
     const val=tail.slice(space);
     const selector=stack.map(x=>x.replace(/\/\*[\s\S]*?\*\//g,'').trim()).filter(Boolean).join(' / ');
-    for(const item of tokens(val,s+sep+1+space)){
-      found.push({...item,property,selector,line:css.slice(0,item.start).split('\n').length});
-    }
+    const colors=tokens(val,s+sep+1+space);
+    colors.forEach((item,index)=>{
+      found.push({...item,property,selector,line:css.slice(0,item.start).split('\n').length,
+        colorIndex:index+1,colorCount:colors.length});
+    });
   };
   for(let i=0;i<css.length;i++){
     const c=css[i],n=css[i+1];
@@ -109,7 +111,7 @@ function hexColor(v){
 function alphaOf(v){
   if(/^#[\da-f]{8}$/i.test(v))return +(parseInt(v.slice(7),16)/255).toFixed(3);
   if(/^#[\da-f]{4}$/i.test(v))return +(parseInt(v.slice(4).repeat(2),16)/255).toFixed(3);
-  if(/^transparent$/i.test(v))return 0;
+  if(/^transparent$/i.test(v))return null; // Picking a visible color from fully transparent should produce a visible color.
   const old=v.match(/,\s*([\d.]+)\s*\)$/);
   if(/^(?:rgba|hsla)\(/i.test(v)&&old)return Number(old[1]);
   const modern=v.match(/\/\s*([\d.]+)(%)?\s*\)$/);
@@ -121,9 +123,74 @@ function maintainAlpha(hex,original){
   const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
   return 'rgba('+rgb.join(', ')+', '+a+')';
 }
+/* These names are guidance, not claims about where a CSS variable is used.
+ * The actual appearance depends on the theme's var() references. */
+const COLOR_NAMES=Object.freeze({
+  '--theme-main':['主题主色','可能是整套主题的主要配色，改变后可能影响不止一处。'],
+  '--paper':['页面／纸张底色','可能用于大面积页面或信纸背景。'],
+  '--card':['卡片背景色','可能用于卡片底色，实际效果由主题引用决定。'],
+  '--card-user':['用户卡片背景','可能用于用户消息卡片。'],
+  '--card-bot':['角色卡片背景','可能用于角色回复卡片。'],
+  '--card-assistant':['角色卡片背景','可能用于角色回复卡片。'],
+  '--panel':['面板背景色','可能用于设置面板或浮层背景。'],
+  '--bg':['背景色','可能控制某个区域的背景。'],
+  '--background':['背景色','可能控制某个区域的背景。'],
+  '--text':['正文文字颜色','可能影响默认文字颜色。'],
+  '--text-main':['主要文字颜色','可能影响较重要的文字。'],
+  '--text-muted':['次要文字颜色','可能影响提示、说明类文字。'],
+  '--border':['边框颜色','可能影响容器轮廓线。'],
+  '--accent':['强调／点缀色','可能用于按钮、选中状态或强调内容。'],
+  '--shadow':['阴影颜色','可能用于卡片或面板阴影。'],
+  '--highlight':['高亮颜色','可能用于选中或重点区域。']
+});
+function explainColor(item){
+  const p=item.property.toLowerCase(),sel=item.selector.toLowerCase();
+  let label='',detail='',estimated=true;
+  if(COLOR_NAMES[p]){
+    [label,detail]=COLOR_NAMES[p];
+  }else if(p.startsWith('--')){
+    const n=p.replace(/^--/,'');
+    const specs=[
+      [/user.*(card|bubble|mes|message)|(card|bubble|mes|message).*user/,'用户消息背景','可能用于用户发送的消息。'],
+      [/(bot|char|assistant).*(card|bubble|mes|message)|(card|bubble|mes|message).*(bot|char|assistant)/,'角色消息背景','可能用于角色回复的消息。'],
+      [/(chat|message|mes).*(bg|background)/,'聊天背景','可能与聊天区或消息背景有关。'],
+      [/(panel|drawer|popup|modal)/,'弹窗／面板颜色','可能用于设置面板、抽屉或弹窗。'],
+      [/(card|bubble)/,'卡片／气泡颜色','可能用于卡片或消息气泡。'],
+      [/(paper|page)/,'页面底色','可能用于页面或信纸。'],
+      [/(text|font|foreground|fg)/,'文字颜色','可能用于正文或提示文字。'],
+      [/(border|stroke|outline|line)/,'边框／线条颜色','可能用于边框、描边或分隔线。'],
+      [/(shadow)/,'阴影颜色','可能用于外阴影或柔光。'],
+      [/(accent|highlight|primary|main)/,'主色／强调色','可能用于页面主色或强调元素。'],
+      [/(muted|secondary|hint|subtle)/,'次要元素颜色','可能用于提示文字或弱化元素。'],
+      [/(background|bg)/,'背景颜色','可能用于某个区域的背景。']
+    ];
+    const rule=specs.find(([regex])=>regex.test(n));
+    if(rule){label=rule[1];detail=rule[2];}
+    else {label='自定义颜色变量';detail='这个变量的用途要结合主题中引用它的代码判断。';}
+  }else{
+    estimated=false;
+    const rules=[
+      [/^color$/,'文字颜色','修改这里的文字颜色。'],
+      [/^(?:background|background-color)$/,'背景颜色','修改此 CSS 规则指定区域的背景颜色。'],
+      [/^background-image$/,'背景图／渐变颜色','修改背景图层或渐变中的一个颜色。'],
+      [/^border|border$|^outline/,'边框／轮廓颜色','修改这个 CSS 规则中使用的边框或轮廓颜色。'],
+      [/shadow/,'阴影／柔光颜色','修改阴影或发光效果中使用的颜色。'],
+      [/^fill$/,'图形填充色','修改 SVG 等图形的填充颜色。'],
+      [/^stroke$/,'图形描边色','修改 SVG 等图形的描边颜色。'],
+      [/^caret/,'输入光标颜色','修改文本输入光标的颜色。']
+    ];
+    const rule=rules.find(([regex])=>regex.test(p));
+    if(rule){label=rule[1];detail=rule[2];}
+    else {label='样式颜色';detail='这是 CSS 属性里的一个颜色值，可点「定位」查看上下文。';}
+  }
+  if(item.colorCount>1)label+=' · 第 '+item.colorIndex+' 色';
+  if(sel===':root'&&p.startsWith('--'))detail+=' 这是全局变量。';
+  if(item.color.toLowerCase()==='transparent')detail+=' 当前颜色为完全透明。';
+  return {label,detail,estimated};
+}
 export function createThemeStudio({notify=()=>{}}={}){
   let root=null,textarea=null,results=null,search=null,hint=null,undoControl=null;
-  let enabled=false,expanded=false,large=false,dark=false,timer=0;
+  let enabled=false,expanded=false,large=false,appearance='auto',timer=0;
   let originalHeight=null,undo=[],lastTheme='',warned=false;
   const currentTheme=()=>document.getElementById('themes')?.value||'';
   const message=(text,warning=false)=>{if(hint)hint.textContent=text;if(warning)notify(text,'warning');};
@@ -180,12 +247,20 @@ export function createThemeStudio({notify=()=>{}}={}){
     if(parsed.unbalanced){
       results.append(el('p','empty','CSS 存在未闭合的代码块，颜色编辑已暂时停用。'));return;
     }
-    const filtered=parsed.items.filter(x=>!query||(x.selector+' '+x.property+' '+x.color).toLowerCase().includes(query));
+    const explained=parsed.items.map(item=>({...item,guide:explainColor(item)}));
+    const filtered=explained.filter(item=>!query||
+      (item.selector+' '+item.property+' '+item.color+' '+item.guide.label+' '+item.guide.detail)
+        .toLowerCase().includes(query));
     results.append(el('div','result-title','可编辑颜色 · '+filtered.length+' 项'));
+    results.append(el('p','guide','中文名称根据 CSS 变量名推测，不代表真实使用位置。修改「--」开头的全局变量，可能影响多个地方；可点「定位」查看原代码。'));
     for(const item of filtered.slice(0,150)){
       const row=el('div','row');
       const meta=el('div','meta');
-      meta.append(el('span','selector',item.selector||'CSS 规则'),el('span','property',item.property+' · 第 '+item.line+' 行'));
+      const guide=el('strong','friendly-name',item.guide.label);
+      const explanation=el('div','friendly-detail',item.guide.detail);
+      const technical=el('div','technical',(item.property||'颜色')+' · '+
+        (item.selector.trim()===':root'?'全局变量':item.selector||'CSS 规则')+' · 第 '+item.line+' 行');
+      meta.append(guide,explanation,technical);
       const tools=el('div','controls');
       const chip=el('span','chip');chip.style.backgroundColor=item.color;
       const value=el('input','value');value.type='text';value.value=item.color;value.spellcheck=false;
@@ -289,14 +364,25 @@ export function createThemeStudio({notify=()=>{}}={}){
     });
     const goTop=iconBtn('fa-arrow-up','CSS 代码回到顶部',()=>scrollEditor(false));
     const goBottom=iconBtn('fa-arrow-down','CSS 代码跳到底部',()=>scrollEditor(true));
-    const mode=iconBtn('fa-moon','切换工作台为夜间外观',()=>{
-      dark=!dark;
-      root.dataset.mode=dark?'dark':'light';
-      const newLabel=dark?'切换工作台为日间外观':'切换工作台为夜间外观';
-      mode.title=newLabel;
-      mode.setAttribute('aria-label',newLabel);
-      mode.firstElementChild.className='fa-solid '+(dark?'fa-sun':'fa-moon');
+    // Follow TT appearance by default. Explicit day/night override only this panel.
+    // One tap cycles: follow theme → night → day → follow theme.
+    const viewModes={
+      auto:{icon:'fa-circle-half-stroke',label:'跟随 TT 主题',next:'夜间'},
+      dark:{icon:'fa-moon',label:'夜间',next:'日间'},
+      light:{icon:'fa-sun',label:'日间',next:'跟随主题'}
+    };
+    const mode=iconBtn('fa-circle-half-stroke','工作台外观：跟随 TT 主题',()=>{
+      appearance=appearance==='auto'?'dark':appearance==='dark'?'light':'auto';
+      root.dataset.mode=appearance;
+      const info=viewModes[appearance];
+      const label='工作台外观：'+info.label+'；再次点击切换为'+info.next;
+      mode.title=label;
+      mode.setAttribute('aria-label',label);
+      mode.firstElementChild.className='fa-solid '+info.icon;
+      message('工作台外观：'+info.label+'（只调整工作台，不影响 TT 主题）');
+      notify('CSS 工作台：'+info.label,'info');
     });
+    root.dataset.mode='auto';
     actions.append(
       btn('保存',()=>save()),btn('另存',()=>save(true)),
       btn('刷新',draw),goTop,goBottom,
@@ -315,7 +401,7 @@ export function createThemeStudio({notify=()=>{}}={}){
     undoControl.disabled=true;
     filters.append(search,undoControl);
     results=el('div','results');
-    hint=el('p','hint','调色后点「应用」才会修改 CSS；「撤销」仅撤回工作台已应用的颜色。记得保存主题。');
+    hint=el('p','hint','颜色方块可选色、旁边可输入色值；点「应用」才会修改 CSS，点「定位」看原位置。撤销仅恢复工作台已应用的颜色。');
     body.append(results,hint);
     // Search remains available even while the color results are collapsed.
     root.append(bar,filters,body);
