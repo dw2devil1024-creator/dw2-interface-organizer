@@ -1353,9 +1353,10 @@
    Never re-style TT's native #customCSS or unrelated extensions.
 ========================================================= */
 #dw2io-css-studio.dw2io-cs-root {
-  --cs-bg:rgba(110,110,120,.065);
-  --cs-inner:rgba(110,110,120,.08);
-  --cs-line:rgba(140,140,150,.20);
+  /* Default AUTO mode reads the active TT theme variables live. */
+  --cs-bg:var(--SmartThemeBlurTintColor,rgba(60,60,65,.72));
+  --cs-inner:rgba(128,128,128,.12);
+  --cs-line:var(--SmartThemeBorderColor,rgba(140,140,150,.25));
   --cs-text:var(--SmartThemeBodyColor,#ddd);
   --cs-muted:var(--SmartThemeQuoteColor,var(--cs-text));
   margin:9px 0 6px!important;
@@ -1413,7 +1414,7 @@
 #dw2io-css-studio .dw2io-cs-results {max-height:min(55vh,520px)!important;min-width:0!important;overflow:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch;}
 #dw2io-css-studio .dw2io-cs-result-title {font-size:11px!important;font-weight:650!important;margin:12px 1px 7px!important;opacity:.82!important;}
 #dw2io-css-studio .dw2io-cs-row {border:1px solid var(--cs-line)!important;border-radius:9px!important;padding:7px!important;background:var(--cs-inner)!important;display:flex!important;flex-direction:column!important;gap:6px!important;min-width:0!important;margin-bottom:6px!important;}
-#dw2io-css-studio .dw2io-cs-meta {display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;column-gap:12px!important;row-gap:3px!important;min-width:0!important;}
+#dw2io-css-studio .dw2io-cs-meta {display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:3px!important;min-width:0!important;}
 #dw2io-css-studio .dw2io-cs-selector {font-size:11px!important;font-weight:550!important;white-space:normal!important;overflow-wrap:anywhere!important;min-width:0!important;flex:1 1 auto!important;}
 #dw2io-css-studio .dw2io-cs-property {font-size:10px!important;color:var(--cs-muted)!important;flex:0 0 auto!important;}
 #dw2io-css-studio .dw2io-cs-controls {display:flex!important;align-items:center!important;gap:5px!important;min-width:0!important;}
@@ -1452,4 +1453,41 @@
   font-size:12px!important;
   line-height:1!important;
   pointer-events:none!important;
+}
+
+/* v0.1.25 · Visual color cards with readable Chinese purpose labels.
+   The guide is explicitly heuristic for variables; original CSS keys remain visible. */
+#dw2io-css-studio .dw2io-cs-friendly-name {
+  display:block!important;
+  color:var(--cs-text)!important;
+  font-size:12px!important;
+  font-weight:650!important;
+  letter-spacing:.012em!important;
+  line-height:1.5!important;
+  overflow-wrap:anywhere!important;
+}
+#dw2io-css-studio .dw2io-cs-friendly-detail {
+  display:block!important;
+  color:var(--cs-muted)!important;
+  font-size:10px!important;
+  line-height:1.55!important;
+  overflow-wrap:anywhere!important;
+  opacity:.9!important;
+}
+#dw2io-css-studio .dw2io-cs-technical {
+  display:block!important;
+  color:var(--cs-muted)!important;
+  font-size:10px!important;
+  line-height:1.4!important;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;
+  overflow-wrap:anywhere!important;
+  opacity:.7!important;
+}
+#dw2io-css-studio .dw2io-cs-guide {
+  color:var(--cs-muted)!important;
+  font-size:10px!important;
+  line-height:1.55!important;
+  margin:3px 2px 9px!important;
+  opacity:.9!important;
+  overflow-wrap:anywhere!important;
 }
