@@ -114,7 +114,7 @@ function maintainAlpha(hex,original){
 export function createThemeStudio({notify=()=>{}}={}){
   let root=null,textarea=null,results=null,search=null,hint=null,undoControl=null;
   let enabled=false,expanded=false,large=false,dark=false,timer=0;
-  let originalHeight=null,undo=[],lastTheme='';
+  let originalHeight=null,undo=[],lastTheme='',warned=false;
   const currentTheme=()=>document.getElementById('themes')?.value||'';
   const message=(text,warning=false)=>{if(hint)hint.textContent=text;if(warning)notify(text,'warning');};
   function jump(start,length=0){
@@ -141,7 +141,7 @@ export function createThemeStudio({notify=()=>{}}={}){
     }
     if(!validColor(value)){message('颜色格式无效，未修改 CSS。',true);return;}
     if(value===item.color)return;
-    undo.push({theme:currentTheme(),css:existing});
+    undo.push({theme:currentTheme(),css:existing,after:existing.slice(0,item.start)+value+existing.slice(item.end)});
     if(undo.length>12)undo.shift();
     writeCSS(existing.slice(0,item.start)+value+existing.slice(item.end));
     message('已精确修改这一处颜色。记得保存到 TT 主题。');
@@ -150,6 +150,9 @@ export function createThemeStudio({notify=()=>{}}={}){
     const previous=undo.pop();if(!previous)return;
     if(previous.theme!==currentTheme()){
       undo=[];message('已切换主题，不能跨主题撤销。',true);return;
+    }
+    if(textarea.value!==previous.after){
+      undo=[];message('你已手动修改 CSS，为防止覆盖新内容，本次撤销已取消。',true);return;
     }
     writeCSS(previous.css);message('已撤销上一处颜色修改。');
   }
@@ -227,7 +230,8 @@ export function createThemeStudio({notify=()=>{}}={}){
     const t=document.getElementById('customCSS'),block=document.getElementById('CustomCSS-textAreaBlock');
     if(!(t instanceof HTMLTextAreaElement)||!block?.parentNode)return false;
     if(document.querySelector('#visual-css-editor-new,#native-css-toolbar-new')){
-      return false; // Do not stack two editors; old ThemeEditor must be disabled first.
+      if(!warned){notify('检测到旧 ThemeEditor。请先停用它并刷新 TT，再开启 DW2 CSS 工作台。','warning');warned=true;}
+      return false; // Never stack two editing panels on the same native textarea.
     }
     textarea=t;root=el('section','root');root.id=ID;
     const bar=el('div','toolbar'),title=el('strong','title','DW2 · CSS 工作台');
