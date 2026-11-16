@@ -17,7 +17,17 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.25-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.26-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.26-beta.1 · CSS 工作台极简化：去掉颜色编辑，仅保留搜索定位与工具
+
+根据 iPhone 实机验收反馈：TT 自带主题色编辑器已经能处理常用整体颜色，用户的自定义 CSS 也有详细的中文区块注释。为了避免与原生功能重复，**完整移除**本插件工作台的可视化改色逻辑及界面。
+
+- **删除**：全部颜色卡片、取色器、色值输入框、「应用颜色」、专用颜色撤销、中文色值用途推测、渐变分析、颜色面板展开／收起开关及无用卡片样式。搜索不会改写 CSS。
+- **搜索真正有用的内容**：在工具栏下方常驻搜索框，直接检索 TT 原生 `#customCSS` 中的中文注释、章节／区域名称和任意 CSS 代码。例如输入「顶栏」「正文」「世界书」，显示实际匹配行号及原始行片段；点击任意结果可跳转并选中对应内容。支持英文大小写不敏感，统计匹配总行数，最多显示 65 行结果，避免手机渲染过量。
+- **保留**：TT 原生主题「保存」「另存」、重新搜索的刷新、↑↓ 返回代码首尾、最大化／恢复编辑框，以及工作台「跟随 TT 主题／夜间／日间」三种外观。
+- **安全和兼容**：不更改 `#customCSS` 内容、主题色、原生保存处理器、世界书布局或其他 DW2 插件；关闭工作台完整移除 UI 并还原临时输入框高度。不叠加旧 ThemeEditor。默认保持原插件 CSS 工作台设置开关，避免用户更新后失去入口。
+- **测试状态**：JavaScript 静态语法检查和中文注释搜索／行号定位／显示数量样例通过；CSS 结构检查通过。实际 iPhone 上的搜索与跳转体验需实机复测。
 
 ## v0.1.25-beta.1 · CSS 工作台自动跟随主题与中文用途说明
 
