@@ -1,5 +1,5 @@
 /* DW2 · User Interface Accordion for TauriTavern 2.3.
- * Five reversible groups using native <details>/<summary>.
+ * Six reversible groups using native <details>/<summary>.
  * Original native setting controls move intact, with comment placeholders
  * preserving exact initial positions. No setting values are written.
  */
@@ -22,6 +22,15 @@ const CONFIG=[
     title:'杂项',
     parent:'#UI-Customization',
     members:['[name="MiscellaneousToggles"]']
+  },
+  {
+    // Custom CSS remains separate from Misc and keeps the native textarea,
+    // its original expand button, and the complete DW2 CSS Studio intact.
+    // Its original node lives inside MiscellaneousToggles on TT 2.3.
+    key:'css',
+    title:'自定义 CSS',
+    parent:'#UI-Customization',
+    members:['#CustomCSS-block']
   },
   {
     key:'chat',
