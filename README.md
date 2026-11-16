@@ -17,7 +17,17 @@
 >
 > *No public software license is granted. Unauthorized use, modification, derivative development, redistribution, and republication of rights-controlled original content are prohibited, subject to GitHub's Terms of Service, applicable law, and existing third-party licenses.*
 
-自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.29-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+自用的 TauriTavern / SillyTavern 界面整理扩展。当前版本 **0.1.30-beta.1**。世界书展开页新增默认收起的「正文设置」，匹配字段改四列、两列与递归勾选两行；正文上方说明改为「最大化按钮、内容、词符、UID、说明」，保留已经验收的高级设置。iPhone 实机待验收。
+
+## v0.1.30-beta.1 · 用户设置页顶部三排整理、外观选项两列及原生箭头统一
+
+基于用户提供的 TT 2.3 iPhone 截图和现有的五折叠功能做**局部 UI 微调**，不重新设计页面。
+
+- **顶端三排：** 使用原生前两行现有 DOM 节点的 CSS Grid 布局，不移动或复制控件：第一排「用户设置 + 问号说明」左侧、TT 版本文本右侧；第二排「语言标签＋原生下拉选择」与「搜索设置」横向并排；第三排单独显示原来的 TT 设置／账户操作按钮。问号原本就在 `h3` 内，这次用 `inline-flex` 阻止换行并对齐，绝不剥离其链接和事件。
+- **外观选项两列：** 「头像样式、聊天风格、媒体样式、通知」四个原生选择控件按两列两行排列，每个是「标签在上／下拉框在下」，左右纵向齐整。只对 `[name="AvatarAndChatDisplay"]` 添加样式，不重绘或取代 select。
+- **两个原生圆形箭头改成细线箭头：** 「主题颜色」与「自动补全设置」的原生 `inline-drawer-toggle` 标题按其 `data-i18n` 精确识别，仅添加独立样式钩子，并把其 Font Awesome 圆形下箭头的字形换为简单细箭头。TT 的原生打开关闭事件和 `up/down` 状态保留。
+- **完全可逆：** 以上新样式仅在 `#user-settings-block.dw2io-ui-layout-active` 存在时生效，钩子只在五折叠开启时添加；关闭五折叠或总开关会移除钩子，页面恢复原生布局。已经稳定的五折叠正文、世界书、CSS 工作台及其他插件保持不动。
+- **验证：** 已核对 SillyTavern 原生 HTML 中 `userSettingsRowOne`／`UserSettingsRowTwo`、`UI-language-block`、`settingsSearch`、`account_controls`、`AvatarAndChatDisplay` 及两个原生子折叠标题的确切结构。JavaScript、CSS、版本引用静态检查通过；iPhone 视觉与交互待实机验收。
 
 ## v0.1.29-beta.1 · 用户界面五折叠（独立开关、可还原）
 
